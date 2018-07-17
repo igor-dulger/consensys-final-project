@@ -36,7 +36,7 @@ contract Shop is Ownable, MarketplaceRoles, Destructible {
         uint price,
         uint32 quantity
     );
-
+ 
     event ProductEdited(
         address indexed actor,
         uint indexed id,

@@ -28,6 +28,18 @@ library ProductLib {
         _;
     }
 
+    function checkQuantity(
+        ProductStorage storage self,
+        uint _id,
+        uint32 _quantity
+    )
+        internal
+        view
+        returns (bool)
+    {
+        return self.list[_id].quantity >= _quantity;
+    }
+
     /**
     * @dev Create a new product.
     * @param self Reference to producr storage.
@@ -39,7 +51,7 @@ library ProductLib {
         internal
         returns (uint256)
     {
-        self.productCount.add(1);
+        self.productCount = self.productCount.add(1);
         self.list[self.productCount] = Product(
             self.productCount,
             _name,
@@ -130,7 +142,7 @@ library ProductLib {
     {
         require(self.list[_id].quantity >= _quantity);
 
-        self.list[_id].quantity.sub(_quantity);
+        self.list[_id].quantity = uint32(self.list[_id].quantity.sub(_quantity));
         emit ProductQuantityDecreased(msg.sender, _id, _quantity);
         return _id;
     }

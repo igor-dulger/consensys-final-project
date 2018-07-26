@@ -1,15 +1,15 @@
 pragma solidity ^0.4.24;
 
-/* import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
-import 'openzeppelin-solidity/contracts/lifecycle/Destructible.sol'; */
 import "./openzeppelin/ownership/Ownable.sol";
 import "./openzeppelin/lifecycle/Destructible.sol";
-import "./MarketplaceRoles.sol";
 import "./ProductLib.sol";
+import "./EntityList.sol";
 
-contract Shop is Ownable, Destructible {
+contract Shop is Ownable, Destructible,EntityList {
     using SafeMath for uint;
     using ProductLib for ProductLib.ProductStorage;
+    string public name;
+    string public description;
 
     ProductLib.ProductStorage internal products;
 
@@ -18,24 +18,26 @@ contract Shop is Ownable, Destructible {
         _;
     }
 
-    constructor() public {
+    constructor(string _name, string _description) public {
+        name = _name;
+        description = _description;
         products.setPageSize(100);
     }
 
-    function addProduct(string _name, uint256 _price, uint32 _quantity)
+    function addProduct(string _name, uint256 _price, uint32 _quantity, string _image)
         public
         onlyOwner
         returns (uint)
     {
-        return products.add(_name, _price, _quantity);
+        return products.add(_name, _price, _quantity, _image);
     }
 
-    function editProduct(uint _id, string _name, uint256 _price, uint32 _quantity)
+    function editProduct(uint _id, string _name, uint256 _price, uint32 _quantity, string _image)
         public
         onlyOwner
         returns (uint)
     {
-        return products.edit(_id, _name, _price, _quantity);
+        return products.edit(_id, _name, _price, _quantity, _image);
     }
 
     function deleteProduct(uint _id)
@@ -68,31 +70,30 @@ contract Shop is Ownable, Destructible {
         checkQuantity(_id, _quantity)
         returns (uint)
     {
-        (,,uint price,) = products.get(_id);
+        (,,uint price,,) = products.get(_id);
         uint total = price.mul(_quantity);
 
         require(total <= msg.value);
-
-        returnExtra(msg.value, total);
-
         products.decreaseQuantity(_id, _quantity);
         emit ProductSold(msg.sender, _id, _quantity, total);
+
+        returnExtra(msg.value, total);
     }
 
     function getProduct(uint256 _id)
         public
         view
-        returns (uint256, string, uint256, uint32)
+        returns (uint256, string, uint256, uint32, string)
     {
         return products.get(_id);
     }
 
-    function getList(uint256 _from, uint _to)
+    function getList(uint256 _from, uint _count)
         public
         view
         returns (uint[])
     {
-        return products.getList(_from, _to);
+        return products.getList(_from, _count);
     }
 
     function getProductCount()

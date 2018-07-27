@@ -1,18 +1,13 @@
 var Shop = artifacts.require("./Shop.sol");
-Shop.new("MyTestShop", "This shop is created for testing");
 
 contract('Shop', function(accounts) {
     var shop;
-
-    Shop.new("MyTestShop", "This shop is created for testing")
-        .then(function(instance) {
-           shop = instance;
-        });
 
     const owner = accounts[0]
     const alice = accounts[1];
 
     it("should add a product to a shop", async () => {
+        shop = await Shop.new("MyTestShop", "This shop is created for testing");
         const price = web3.toBigNumber(1000000000);
         const quantity = web3.toBigNumber(15);
         const name = "Test product";
@@ -107,39 +102,6 @@ contract('Shop', function(accounts) {
         } catch (e) {
             assert.equal(e.message, 'VM Exception while processing transaction: revert', 'product must be deleted but it exists');
         }
-    });
-
-
-    it("should set and get page size", async () => {
-        const size = web3.toBigNumber(10);
-
-        await shop.setPageSize(web3.toBigNumber(10), {from: owner});
-        let newSize = await shop.getPageSize();
-        assert.equal(newSize, 10, 'incorrect page size test 1');
-
-        const LogProductDeleted = await shop.allEvents();
-
-        let log = await new Promise(function(resolve, reject) {
-            LogProductDeleted.watch(function(error, log){ resolve(log);});
-        });
-
-        assert.equal('PageSizeChanged', log.event, 'incorrect event emited');
-        assert.equal(owner, log.args.actor, 'incorrect owner in the event');
-        assert.equal(10, log.args.to, 'incorrect to in the event ' + log.args.to);
-        assert.equal(100, log.args.from, 'incorrect from in the event ' + log.args.from);
-
-        await shop.setPageSize(web3.toBigNumber(15), {from: owner});
-        newSize = await shop.getPageSize();
-        assert.equal(newSize, 15, 'incorrect page size test 2');
-
-        log = await new Promise(function(resolve, reject) {
-            LogProductDeleted.watch(function(error, log){ resolve(log);});
-        });
-
-        assert.equal('PageSizeChanged', log.event, 'incorrect event emited');
-        assert.equal(owner, log.args.actor, 'incorrect owner in the event');
-        assert.equal(15, log.args.to, 'incorrect to in the event ' + log.args.to);
-        assert.equal(10, log.args.from, 'incorrect from in the event ' + log.args.from);
     });
 
     it("should show correct product count", async () => {
@@ -286,13 +248,6 @@ contract('Shop', function(accounts) {
 
         let now = web3.fromWei(web3.eth.getBalance(alice)).toString();
         assert.equal(Math.floor(was - count - now), 0, "Alice's balance is invalid");
-
-        // const LogProductSold = await shop.allEvents();
-        // let log = await new Promise(function(resolve, reject) {
-        //     LogProductSold.watch(function(error, log){
-        //         resolve(log);
-        //     });
-        // });
 
         assert.equal(tx.logs.length, 2, 'incorrect number of events emited');
 

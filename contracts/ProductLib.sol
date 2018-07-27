@@ -32,7 +32,6 @@ library ProductLib {
         uint64 productMaxId;
         uint64 productCount;
         mapping (uint64 => Product) entities;
-        uint16 pageSize;
     }
 
     /**
@@ -63,33 +62,6 @@ library ProductLib {
     {
         return self.entities[_id].quantity >= _quantity;
     }
-
-    /**
-    * @dev Set page size for listing.
-    * @param self Reference to producr storage.
-    * @param _size Max number of items in a list
-    */
-    function setPageSize(ProductStorage storage self, uint16 _size)
-        internal
-    {
-        emit PageSizeChanged(msg.sender, _size, self.pageSize);
-        self.pageSize = _size;
-    }
-
-    /**
-    * @dev Get page size for listing.
-    * @param self Reference to producr storage.
-    * @return Max number of items in a list
-    */
-    function getPageSize(ProductStorage storage self)
-        internal
-        view
-        returns(uint16)
-    {
-        return self.pageSize;
-    }
-
-//sha3("Voting", userAddress, pollCloseTime, "secrets", pollId, "secret") => bytes32 secret
 
     /**
     * @dev Create a new product.
@@ -140,8 +112,8 @@ library ProductLib {
         uint32 _quantity,
         string _image
     )
-        inStorage(self, _id)
         internal
+        inStorage(self, _id)
         returns (uint64)
     {
         Product storage product = self.entities[_id];
@@ -166,9 +138,9 @@ library ProductLib {
         ProductStorage storage self,
         uint64 _id
     )
+        internal
         inStorage(self, _id)
         view
-        internal
         returns (uint64, string, uint256, uint32, string)
     {
         return (
@@ -187,8 +159,8 @@ library ProductLib {
     function getLastProductId(
         ProductStorage storage self
     )
-        view
         internal
+        view
         returns (uint64)
     {
         return self.productMaxId;
@@ -201,8 +173,8 @@ library ProductLib {
     function getProductCount(
         ProductStorage storage self
     )
-        view
         internal
+        view
         returns (uint64)
     {
         return self.productCount;
@@ -219,8 +191,8 @@ library ProductLib {
         uint64 _id,
         uint32 _quantity
     )
-        inStorage(self, _id)
         internal
+        inStorage(self, _id)
         returns (uint64)
     {
         require(self.entities[_id].quantity >= _quantity);
@@ -237,9 +209,9 @@ library ProductLib {
     * @param self Reference to product storage.
     * @param _id Product id to delete.
     */
-    function destroy(ProductStorage storage self, uint64 _id)
-        inStorage(self, _id)
+    function remove(ProductStorage storage self, uint64 _id)
         internal
+        inStorage(self, _id)
         returns (bool)
     {
         delete self.entities[_id];
@@ -268,12 +240,6 @@ library ProductLib {
         address indexed actor,
         uint64 indexed id,
         uint32 quantity
-    );
-
-    event PageSizeChanged(
-        address indexed actor,
-        uint16 indexed to,
-        uint16 indexed from
     );
 
     event ProductDeleted(address indexed actor, uint64 indexed id);

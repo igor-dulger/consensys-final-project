@@ -5,32 +5,10 @@ import "truffle/DeployedAddresses.sol";
 import "../contracts/ProductLib.sol";
 import "./ThrowHandler.sol";
 
-contract TestProductLib is ThrowHandler{
+contract TestProductLib is ThrowHandler {
 
     using ProductLib for ProductLib.ProductStorage;
     ProductLib.ProductStorage internal products;
-
-    function testSetPageSize() public {
-        // Arrange
-        uint16 pageSize = 22;
-
-        // Act
-        products.setPageSize(pageSize);
-
-        // Assert
-        Assert.equal(uint(products.pageSize), uint(pageSize), "Page size should be set");
-    }
-
-    function testGetPageSize() public  {
-        // Arrange
-        uint16 expected = 22;
-
-        // Act
-        uint16 actual = products.getPageSize();
-
-        // Assert
-        Assert.equal(uint(actual), uint(expected), "Get page size");
-    }
 
     function getProduct() public pure returns (string, uint, uint32, string){
         string memory name = "Test product";
@@ -159,12 +137,12 @@ contract TestProductLib is ThrowHandler{
         Assert.isFalse(execute('decreaseQuantityToMuch()'), "Should fail over limit");
     }
 
-    function testDestroy() public {
+    function testRemove() public {
         // Arrange
         uint64 id = 1;
 
         // Act
-        bool actual = products.destroy(id);
+        bool actual = products.remove(id);
 
         // Assert
         Assert.equal(true, actual, "Destroy has to return true");

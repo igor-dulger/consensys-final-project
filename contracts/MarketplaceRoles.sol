@@ -16,7 +16,7 @@ import "./openzeppelin/ownership/rbac/RBAC.sol";
  */
 contract MarketplaceRoles is Ownable, RBAC {
   string public constant ROLE_ADMIN = "admin";
-  string public constant ROLE_SHOPOWNER = "shopowner";
+  string public constant ROLE_SELLER = "seller";
 
   /**
    * @dev Throws if called by any account that's not a admin.
@@ -29,8 +29,8 @@ contract MarketplaceRoles is Ownable, RBAC {
   /**
    * @dev Throws if called by any account that's not a shop owner.
    */
-  modifier onlyShopOwner() {
-    checkRole(msg.sender, ROLE_SHOPOWNER);
+  modifier onlySeller() {
+    checkRole(msg.sender, ROLE_SELLER);
     _;
   }
 
@@ -56,12 +56,12 @@ contract MarketplaceRoles is Ownable, RBAC {
   /**
    * @dev getter to determine if address has shop owner role
    */
-  function isShopOwner(address _addr)
+  function isSeller(address _addr)
     public
     view
     returns (bool)
   {
-    return hasRole(_addr, ROLE_SHOPOWNER);
+    return hasRole(_addr, ROLE_SELLER);
   }
 
 }

@@ -3,40 +3,53 @@ pragma solidity ^0.4.24;
 import "./openzeppelin/ownership/Ownable.sol";
 import "./openzeppelin/lifecycle/Destructible.sol";
 import "./ProductLib.sol";
-import "./EntityList.sol";
+import "./EntityLib.sol";
+import "./Paginable.sol";
 
-contract Shop is Ownable, Destructible, EntityList {
+contract Shop is Ownable, Destructible, Paginable {
     using SafeMath for uint;
     using ProductLib for ProductLib.ProductStorage;
+    using EntityLib for EntityLib.EntityStorage;
 
     string public name;
     string public description;
     bytes32 public constant ENTITY_NAME = "products";
 
     ProductLib.ProductStorage internal products;
+    EntityLib.EntityStorage internal entities;
 
     modifier checkQuantity(uint64 _id, uint32 _quantity) {
         require(products.checkQuantity(_id, _quantity) == true);
         _;
     }
 
-    constructor(string _name, string _description) public {
+    constructor(string _name, string _description) public payable {
         name = _name;
         description = _description;
-        products.setPageSize(100);
     }
 
-    function addProduct(string _name, uint256 _price, uint32 _quantity, string _image)
+    function addProduct(
+        string _name,
+        uint256 _price,
+        uint32 _quantity,
+        string _image
+    )
         public
         onlyOwner
         returns (uint64)
     {
         uint64 id = products.add(_name, _price, _quantity, _image);
-        addEntity(ENTITY_NAME, id);
+        entities.add(ENTITY_NAME, id);
         return id;
     }
 
-    function editProduct(uint64 _id, string _name, uint256 _price, uint32 _quantity, string _image)
+    function editProduct(
+        uint64 _id,
+        string _name,
+        uint256 _price,
+        uint32 _quantity,
+        string _image
+    )
         public
         onlyOwner
         returns (uint)
@@ -46,29 +59,14 @@ contract Shop is Ownable, Destructible, EntityList {
 
     function deleteProduct(uint64 _id) public onlyOwner returns (bool)
     {
-        deleteEntity(ENTITY_NAME, _id);
-        return products.destroy(_id);
-    }
-
-    function setPageSize(uint16 _size)
-        public
-        onlyOwner
-    {
-        products.setPageSize(_size);
-    }
-
-    function getPageSize()
-        public
-        view
-        returns (uint16)
-    {
-        return products.getPageSize();
+        entities.remove(ENTITY_NAME, _id);
+        return products.remove(_id);
     }
 
     function buyProduct(uint64 _id, uint32 _quantity)
         public
-        payable
         checkQuantity(_id, _quantity)
+        payable
         returns (uint64)
     {
         (,,uint price,,) = products.get(_id);
@@ -89,37 +87,46 @@ contract Shop is Ownable, Destructible, EntityList {
         return products.get(_id);
     }
 
-    function getList(uint64 _from, uint _count)
+    function getList(uint64 _from, uint16 _count)
         public
         view
         returns (uint64[])
     {
-        return getList(ENTITY_NAME, uint64(_from), _count);
+        if (_count > pageSize) {
+            _count = pageSize;
+        }
+        return entities.getList(ENTITY_NAME, _from, _count);
     }
 
-    function getProductCount() view public returns (uint64) {
+    function getProductCount() public view returns (uint64) {
         return products.getProductCount();
     }
 
-    function getLastProductId() view public returns (uint64)
+    function getLastProductId() public view returns (uint64)
     {
         return products.getLastProductId();
     }
 
-    function getNext(uint64 _id) view public returns (uint64) {
-        return getNextId(ENTITY_NAME, _id);
+    function getNext(uint64 _id) public view returns (uint64) {
+        return entities.getNextId(ENTITY_NAME, _id);
     }
 
-    function getPrev(uint64 _id) view public returns (uint64) {
-        return getPrevId(ENTITY_NAME, _id);
+    function getPrev(uint64 _id) public view returns (uint64) {
+        return entities.getPrevId(ENTITY_NAME, _id);
     }
 
-    function getFirst() view public returns (uint64) {
-        return getNextId(ENTITY_NAME, 0);
+    function getFirst() public view returns (uint64) {
+        return entities.getNextId(ENTITY_NAME, 0);
     }
 
-    function getLast() view public returns (uint64) {
-        return getPrevId(ENTITY_NAME, 0);
+    function getLast() public view returns (uint64) {
+        return entities.getPrevId(ENTITY_NAME, 0);
+    }
+
+    function withdraw(uint value) public onlyOwner returns (bool) {
+        require(value > address(this).balance);
+        address(owner).transfer(value);
+        return true;
     }
 
     function returnExtra(uint value, uint amount) private returns (bool) {

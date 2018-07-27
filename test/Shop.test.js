@@ -222,6 +222,44 @@ contract('Shop', function(accounts) {
 
     });
 
+    it("should return next product", async () => {
+        //"4,5,6,7,8,10,11"
+        let id = await shop.getNext(4);
+        assert.equal(id.toString(), 5, 'get next after 4');
+
+        id = await shop.getNext(1);
+        assert.equal(id.toString(), 0, 'get next after 1');
+
+        id = await shop.getNext(11);
+        assert.equal(id.toString(), 0, 'get next after 11');
+
+    });
+
+    it("should return prev product", async () => {
+        //"4,5,6,7,8,10,11"
+        let id = await shop.getPrev(4);
+        assert.equal(id.toString(), 0, 'get prev 4');
+
+        id = await shop.getPrev(1);
+        assert.equal(id.toString(), 0, 'get prev 1');
+
+        id = await shop.getPrev(11);
+        assert.equal(id.toString(), 10, 'get prev 10');
+    });
+
+    it("should return first product", async () => {
+        //"4,5,6,7,8,10,11"
+        let id = await shop.getFirst();
+        assert.equal(id.toString(), 4, 'get first');
+    });
+
+    it("should return last product", async () => {
+        //"4,5,6,7,8,10,11"
+        let id = await shop.getLast();
+        assert.equal(id.toString(), 11, 'get last');
+    });
+
+
     it("should buy a product and return extra money to a buyer", async () => {
         shop = await Shop.new("MyTestShop", "This shop is created for testing");
 

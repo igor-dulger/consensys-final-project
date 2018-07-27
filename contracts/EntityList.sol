@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 /**
  * @title EntityList
- * @dev Handle list of any entities as a two directional list turned into a circle
+ * @dev Handle a set of lists of any entities as a double linked lists turned into a circle
  */
 contract EntityList {
 
@@ -21,7 +21,7 @@ contract EntityList {
     * @dev Check that id is new in the list
     * @param _key Entity key.
     */
-    modifier newKey(string _entityName, uint64 _key) {
+    modifier newKey(bytes32 _entityName, uint64 _key) {
         require(getId(_entityName, _key) == 0);
         _;
     }
@@ -30,7 +30,7 @@ contract EntityList {
     * @dev Check if key exists in the list
     * @param _key Entity key.
     */
-    modifier existingKey(string _entityName, uint64 _key) {
+    modifier existingKey(bytes32 _entityName, uint64 _key) {
         require(getId(_entityName, _key) == _key);
         _;
     }
@@ -40,7 +40,7 @@ contract EntityList {
     * @param _entityName Name of entity.
     * @param _key entity key
     */
-    function addEntity(string _entityName, uint64 _key)
+    function addEntity(bytes32 _entityName, uint64 _key)
         validKey(_key)
         newKey(_entityName, _key)
         internal
@@ -60,7 +60,7 @@ contract EntityList {
     * @param _entityName Name of entity.
     * @param _key entity key
     */
-    function deleteEntity(string _entityName, uint64 _key)
+    function deleteEntity(bytes32 _entityName, uint64 _key)
         validKey(_key)
         existingKey(_entityName, _key)
         internal
@@ -86,7 +86,7 @@ contract EntityList {
     * @param _from Starting id to get.
     * @param _count End id to get.
     */
-    function getList(string _entityName, uint64 _from, uint _count)
+    function getList(bytes32 _entityName, uint64 _from, uint _count)
         view
         internal
         returns (uint64[])
@@ -124,7 +124,7 @@ contract EntityList {
     * @param _key entity key
     * @return byte32 hash
     */
-    function getId(string _entityName, uint64 _key)
+    function getId(bytes32 _entityName, uint64 _key)
         internal
         view
         returns(uint64)
@@ -138,7 +138,7 @@ contract EntityList {
     * @param _key entity key
     * @return byte32 hash
     */
-    function getIdKey(string _entityName, uint64 _key)
+    function getIdKey(bytes32 _entityName, uint64 _key)
         internal
         pure
         returns(bytes32)
@@ -152,7 +152,7 @@ contract EntityList {
     * @param _key entity key
     * @return byte32 hash
     */
-    function getNextKey(string _entityName, uint64 _key)
+    function getNextKey(bytes32 _entityName, uint64 _key)
         internal
         pure
         returns(bytes32)
@@ -166,7 +166,7 @@ contract EntityList {
     * @param _key entity key
     * @return byte32 hash
     */
-    function getNextId(string _entityName, uint64 _key)
+    function getNextId(bytes32 _entityName, uint64 _key)
         internal
         view
         returns(uint64)
@@ -180,7 +180,7 @@ contract EntityList {
     * @param _key entity key
     * @return byte32 hash
     */
-    function getPrevKey(string _entityName, uint64 _key)
+    function getPrevKey(bytes32 _entityName, uint64 _key)
         internal
         pure
         returns(bytes32)
@@ -194,7 +194,7 @@ contract EntityList {
     * @param _key entity key
     * @return byte32 hash
     */
-    function getPrevId(string _entityName, uint64 _key)
+    function getPrevId(bytes32 _entityName, uint64 _key)
         internal
         view
         returns(uint64)

@@ -7,11 +7,12 @@ import './openzeppelin/math/SafeMath.sol';
  * @dev Math operations with safety checks that throw on error
  */
 library ProductLib {
-    using SafeMath for uint;
     using SafeMath for uint32;
+    using SafeMath for uint64;
+    using SafeMath for uint;
 
     struct Product {
-        uint id;
+        uint64 id;
         string name;
         /*
         we can store image IPFS hash as
@@ -28,10 +29,9 @@ library ProductLib {
     }
 
     struct ProductStorage {
-        uint productMaxId;
-        uint productCount;
-        mapping (bytes32 => Product) entities;
-        mapping (bytes32 => uint) links;
+        uint64 productMaxId;
+        uint64 productCount;
+        mapping (uint64 => Product) entities;
         uint16 pageSize;
     }
 
@@ -41,8 +41,8 @@ library ProductLib {
     * @param _id Produce id.
     */
 
-    modifier inStorage(ProductStorage storage self, uint _id) {
-        require(self.entities[getEntityKey(_id)].id == _id);
+    modifier inStorage(ProductStorage storage self, uint64 _id) {
+        require(self.entities[_id].id == _id);
         _;
     }
 
@@ -54,14 +54,14 @@ library ProductLib {
     */
     function checkQuantity(
         ProductStorage storage self,
-        uint _id,
+        uint64 _id,
         uint32 _quantity
     )
         internal
         view
         returns (bool)
     {
-        return self.entities[getEntityKey(_id)].quantity >= _quantity;
+        return self.entities[_id].quantity >= _quantity;
     }
 
     /**
@@ -107,22 +107,18 @@ library ProductLib {
         string _image
     )
         internal
-        returns (uint256)
+        returns (uint64)
     {
-        self.productMaxId = self.productMaxId.add(1);
-        self.productCount = self.productCount.add(1);
+        self.productMaxId = uint64(self.productMaxId.add(1));
+        self.productCount = uint64(self.productCount.add(1));
 
-        self.entities[getEntityKey(self.productMaxId)] = Product(
+        self.entities[self.productMaxId] = Product(
             self.productMaxId,
             _name,
             _image,
             _price,
             _quantity
         );
-
-        self.links[getPrevKey(self.productMaxId)] = self.links[getPrevKey(0)];
-        self.links[getNextKey(self.links[getPrevKey(0)])] = self.productMaxId;
-        self.links[getPrevKey(0)] = self.productMaxId;
 
         emit ProductAdded(msg.sender, self.productMaxId, _name, _price, _quantity);
         return self.productMaxId;
@@ -138,7 +134,7 @@ library ProductLib {
     */
     function edit(
         ProductStorage storage self,
-        uint256 _id,
+        uint64 _id,
         string _name,
         uint256 _price,
         uint32 _quantity,
@@ -146,9 +142,9 @@ library ProductLib {
     )
         inStorage(self, _id)
         internal
-        returns (uint256)
+        returns (uint64)
     {
-        Product storage product = self.entities[getEntityKey(_id)];
+        Product storage product = self.entities[_id];
 
         product.name = _name;
         product.price = _price;
@@ -168,66 +164,20 @@ library ProductLib {
     */
     function get(
         ProductStorage storage self,
-        uint256 _id
+        uint64 _id
     )
         inStorage(self, _id)
         view
         internal
-        returns (uint256, string, uint256, uint32, string)
+        returns (uint64, string, uint256, uint32, string)
     {
         return (
-            self.entities[getEntityKey(_id)].id,
-            self.entities[getEntityKey(_id)].name,
-            self.entities[getEntityKey(_id)].price,
-            self.entities[getEntityKey(_id)].quantity,
-            self.entities[getEntityKey(_id)].image
+            self.entities[_id].id,
+            self.entities[_id].name,
+            self.entities[_id].price,
+            self.entities[_id].quantity,
+            self.entities[_id].image
         );
-    }
-
-    /**
-    * @dev Get a page of products, returns all existing ids from _from  but no more than count
-    * @param self Reference to product storage.
-    * @param _from Starting id to get.
-    * @param _count End id to get.
-    */
-    function getList(
-        ProductStorage storage self,
-        uint _from,
-        uint _count
-    )
-        view
-        internal
-        returns (uint[])
-    {
-        uint[] memory result;
-
-        if (_count > self.pageSize) {
-            _count = self.pageSize;
-        }
-
-        if (self.entities[getEntityKey(_from)].id != _from) {
-            _from = self.links[getNextKey(0)];
-        }
-
-        uint counter = 0;
-        uint current = _from;
-
-        while (self.entities[getEntityKey(current)].id != 0 && counter < _count) {
-            current = self.links[getNextKey(current)];
-            counter++;
-        }
-
-        result = new uint[](counter);
-
-        counter = 0;
-        current = _from;
-        while (self.entities[getEntityKey(current)].id != 0 && counter < _count) {
-            result[counter] = current;
-            current = self.links[getNextKey(current)];
-            counter++;
-        }
-
-        return result;
     }
 
     /**
@@ -239,7 +189,7 @@ library ProductLib {
     )
         view
         internal
-        returns (uint)
+        returns (uint64)
     {
         return self.productMaxId;
     }
@@ -253,11 +203,10 @@ library ProductLib {
     )
         view
         internal
-        returns (uint)
+        returns (uint64)
     {
         return self.productCount;
     }
-
 
     /**
     * @dev Decrease product quantity.
@@ -267,17 +216,17 @@ library ProductLib {
     */
     function decreaseQuantity(
         ProductStorage storage self,
-        uint256 _id,
+        uint64 _id,
         uint32 _quantity
     )
         inStorage(self, _id)
         internal
-        returns (uint256)
+        returns (uint64)
     {
-        require(self.entities[getEntityKey(_id)].quantity >= _quantity);
+        require(self.entities[_id].quantity >= _quantity);
 
-        self.entities[getEntityKey(_id)].quantity = uint32(
-            self.entities[getEntityKey(_id)].quantity.sub(_quantity)
+        self.entities[_id].quantity = uint32(
+            self.entities[_id].quantity.sub(_quantity)
         );
         emit ProductQuantityDecreased(msg.sender, _id, _quantity);
         return _id;
@@ -288,56 +237,20 @@ library ProductLib {
     * @param self Reference to product storage.
     * @param _id Product id to delete.
     */
-    function destroy(ProductStorage storage self, uint _id)
+    function destroy(ProductStorage storage self, uint64 _id)
         inStorage(self, _id)
         internal
         returns (bool)
     {
-        delete self.entities[getEntityKey(_id)];
-        self.productCount = self.productCount.sub(1);
-        uint prev_id = self.links[getPrevKey(_id)];
-        uint next_id = self.links[getNextKey(_id)];
-
-        self.links[getNextKey(prev_id)] = next_id;
-        self.links[getPrevKey(next_id)] = prev_id;
-
-        delete self.links[getPrevKey(_id)];
-        delete self.links[getNextKey(_id)];
-
+        delete self.entities[_id];
+        self.productCount = uint64(self.productCount.sub(1));
         emit ProductDeleted(msg.sender, _id);
         return true;
     }
 
-    /**
-    * @dev Get key for an entity
-    * @param _id Product id
-    * @return byte32 hash
-    */
-    function getEntityKey(uint _id) internal pure returns(bytes32) {
-        return keccak256(abi.encodePacked("values",_id));
-    }
-
-    /**
-    * @dev Get key for next link of entity list
-    * @param _id Product id
-    * @return byte32 hash
-    */
-    function getNextKey(uint _id) internal pure returns(bytes32) {
-        return keccak256(abi.encodePacked("next",_id));
-    }
-
-    /**
-    * @dev Get key for prev link of entity list
-    * @param _id Product id
-    * @return byte32 hash    
-    */
-    function getPrevKey(uint _id) internal pure returns(bytes32) {
-        return keccak256(abi.encodePacked("prev",_id));
-    }
-
     event ProductAdded(
         address indexed actor,
-        uint indexed id,
+        uint64 indexed id,
         string name,
         uint price,
         uint32 quantity
@@ -345,7 +258,7 @@ library ProductLib {
 
     event ProductEdited(
         address indexed actor,
-        uint indexed id,
+        uint64 indexed id,
         string name,
         uint price,
         uint32 quantity
@@ -353,7 +266,7 @@ library ProductLib {
 
     event ProductQuantityDecreased(
         address indexed actor,
-        uint indexed id,
+        uint64 indexed id,
         uint32 quantity
     );
 
@@ -363,5 +276,5 @@ library ProductLib {
         uint16 indexed from
     );
 
-    event ProductDeleted(address indexed actor, uint indexed id);
+    event ProductDeleted(address indexed actor, uint64 indexed id);
 }

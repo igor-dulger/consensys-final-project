@@ -4,6 +4,7 @@ import './openzeppelin/math/SafeMath.sol';
 
 /**
  * @title SafeMath
+ * @author Igor Dulger 
  * @dev Math operations with safety checks that throw on error
  */
 library ProductLib {
@@ -68,7 +69,7 @@ library ProductLib {
     * @param self Reference to producr storage.
     * @param _name Produce name.
     * @param _price Product price.
-    * @param _quantity The amount to be transferred.
+    * @param _quantity Product quantity.
     * @param _image IPFS hash of image.
     */
     function add(
@@ -101,7 +102,7 @@ library ProductLib {
     * @param self Reference to producr storage.
     * @param _name Produce name.
     * @param _price Product price.
-    * @param _quantity The amount to be transferred.
+    * @param _quantity Product quantity.
     * @param _image IPFS hash of image.
     */
     function edit(
@@ -133,6 +134,7 @@ library ProductLib {
     * @dev Get product.
     * @param self Reference to product storage.
     * @param _id Product id.
+    * @return (uint64, string, uint256, uint32, string)
     */
     function get(
         ProductStorage storage self,
@@ -153,8 +155,9 @@ library ProductLib {
     }
 
     /**
-    * @dev Get product.
+    * @dev Get last product id.
     * @param self Reference to product storage.
+    * @return uint64
     */
     function getLastProductId(
         ProductStorage storage self
@@ -167,8 +170,9 @@ library ProductLib {
     }
 
     /**
-    * @dev Get product.
-    * @param self Reference to product storage.
+    * @dev Get number of products in the storage.
+    * @param self Reference to product the storage.
+    * @return uint64
     */
     function getProductCount(
         ProductStorage storage self
@@ -185,6 +189,7 @@ library ProductLib {
     * @param self Reference to product storage.
     * @param _id Product id.
     * @param _quantity The amount to be decreased.
+    * @return uint64
     */
     function decreaseQuantity(
         ProductStorage storage self,
@@ -208,6 +213,7 @@ library ProductLib {
     * @dev Delete product.
     * @param self Reference to product storage.
     * @param _id Product id to delete.
+    * @return bool
     */
     function remove(ProductStorage storage self, uint64 _id)
         internal
@@ -220,6 +226,14 @@ library ProductLib {
         return true;
     }
 
+    /**
+    * @dev Event for adding a product.
+    * @param actor Who added product (Indexed).
+    * @param id Product id (Indexed).
+    * @param name Product name.
+    * @param price Product price.
+    * @param quantity Product quantity.
+    */
     event ProductAdded(
         address indexed actor,
         uint64 indexed id,
@@ -228,6 +242,14 @@ library ProductLib {
         uint32 quantity
     );
 
+    /**
+    * @dev Event for product editing.
+    * @param actor Who edited product (Indexed).
+    * @param id Product id (Indexed).
+    * @param name Product name.
+    * @param price Product price.
+    * @param quantity Product quantity.
+    */
     event ProductEdited(
         address indexed actor,
         uint64 indexed id,
@@ -236,11 +258,22 @@ library ProductLib {
         uint32 quantity
     );
 
+    /**
+    * @dev Event for changing product quantity.
+    * @param actor Who edited product (Indexed).
+    * @param id Product id (Indexed).
+    * @param quantity Product quantity.
+    */
     event ProductQuantityDecreased(
         address indexed actor,
         uint64 indexed id,
         uint32 quantity
     );
 
+    /**
+    * @dev Event for product deleting.
+    * @param actor Who deleted product (Indexed).
+    * @param id Product id (Indexed).
+    */
     event ProductDeleted(address indexed actor, uint64 indexed id);
 }

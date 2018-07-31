@@ -21,41 +21,45 @@ contract('Marketplace', function(accounts) {
     });
 
     it("give an admin role, allowable only for an owner", async () => {
-        assert.isFalse(await contract.isAdmin(admin));
+        assert.isFalse(await contract.isAdmin(admin), "shouldn't have admin role yet");
         await contract.addAdmin(admin, {from: owner});
-        assert.isTrue(await contract.isAdmin(admin));
+        assert.isTrue(await contract.isAdmin(admin), "shouldn have admin role");
 
         //Marketplace seller can't add admin role
         await exceptions.expectThrow(
             contract.addAdmin(admin, {from: seller}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace seller can't add admin role"
         );
 
         //Marketplace admin can't add admin role
         await exceptions.expectThrow(
             contract.addAdmin(seller, {from: admin}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace admin can't add admin role"
         );
     });
 
     it("remove an admin role from an address, allowable only for an owner", async () => {
         await contract.addAdmin(admin, {from: owner});
-        assert.isTrue(await contract.isAdmin(admin));
+        assert.isTrue(await contract.isAdmin(admin), "shouldn have admin role");
         await contract.removeAdmin(admin, {from: owner});
-        assert.isFalse(await contract.isAdmin(admin));
+        assert.isFalse(await contract.isAdmin(admin), "shouldn't have admin role");
 
         await contract.addAdmin(admin, {from: owner});
 
         //Marketplace admin can't remove admin role
         await exceptions.expectThrow(
             contract.removeAdmin(admin, {from: admin}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace admin can't remove admin role"
         );
 
         //Marketplace seller can't remove admin role
         await exceptions.expectThrow(
             contract.removeAdmin(admin, {from: seller}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace seller can't remove admin role"
         );
     });
 
@@ -71,7 +75,8 @@ contract('Marketplace', function(accounts) {
         //Marketplace seller can't grant seller role
         await exceptions.expectThrow(
             contract.addSeller(buyer, {from: seller}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace seller can't grant seller role"
         );
     });
 
@@ -79,21 +84,22 @@ contract('Marketplace', function(accounts) {
         await contract.addAdmin(admin, {from: owner});
 
         await contract.addSeller(seller, {from: admin});
-        assert.isTrue(await contract.isSeller(seller));
+        assert.isTrue(await contract.isSeller(seller), "shouldn have seller role");
         await contract.removeSeller(seller, {from: owner});
-        assert.isFalse(await contract.isSeller(seller));
+        assert.isFalse(await contract.isSeller(seller), "shouldn't have seller role");
 
         await contract.addSeller(seller, {from: owner});
-        assert.isTrue(await contract.isSeller(seller));
+        assert.isTrue(await contract.isSeller(seller), "shouldn have seller role #2");
         await contract.removeSeller(seller, {from: admin});
-        assert.isFalse(await contract.isSeller(seller));
+        assert.isFalse(await contract.isSeller(seller), "shouldn't have seller role #2");
 
         await contract.addSeller(seller, {from: owner});
 
         //Marketplace seller can't remove seller role
         await exceptions.expectThrow(
             contract.removeSeller(seller, {from: seller}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace seller can't remove seller role"
         );
     });
 
@@ -107,19 +113,22 @@ contract('Marketplace', function(accounts) {
         //Marketplace owner can't create shop
         await exceptions.expectThrow(
             contract.createShop(name, description, {from: owner}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace owner can't create shop"
         );
 
         //Marketplace admin can't create shop
         await exceptions.expectThrow(
             contract.createShop(name, description, {from: admin}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace admin can't create shop"
         );
 
         //buyer can't create shop
         await exceptions.expectThrow(
             contract.createShop(name, description, {from: buyer}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "buyer can't create a shop"
         );
 
         await events.inTransaction(
@@ -161,31 +170,36 @@ contract('Marketplace', function(accounts) {
         //Marketplace owner can't delete shop
         await exceptions.expectThrow(
             contract.deleteShop(web3.toBigNumber(1), {from: owner}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace owner can't delete shop"
         );
 
         //Marketplace admin can't delete shop
         await exceptions.expectThrow(
             contract.deleteShop(web3.toBigNumber(1), {from: admin}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Marketplace admin can't delete shop"
         );
 
-        //buyer can't delete shop
+        //buyer can't delete a shop
         await exceptions.expectThrow(
             contract.deleteShop(web3.toBigNumber(1), {from: buyer}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "buyer can't delete a shop"
         );
 
         //Shop doesn't exist
         await exceptions.expectThrow(
             contract.deleteShop(web3.toBigNumber(4), {from: seller}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Shop doesn't exist"
         );
 
         //Seller2 isn't owner of shop 1
         await exceptions.expectThrow(
             contract.deleteShop(web3.toBigNumber(1), {from: seller2}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Seller2 isn't owner of shop 1"
         );
 
         await events.inTransaction(
@@ -199,7 +213,8 @@ contract('Marketplace', function(accounts) {
         // Shop deleted and doen't exist
         await exceptions.expectThrow(
             contract.getShop(web3.toBigNumber(1)),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Shop deleted and doen't exist"
         );
     });
 

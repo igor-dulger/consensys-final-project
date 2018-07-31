@@ -2,6 +2,7 @@ pragma solidity ^0.4.24;
 
 /**
  * @title EntityList
+ * @author Igor Dulger
  * @dev Handle a set of lists of any entities as a double linked lists turned into a circle
  */
 library EntityLib {
@@ -41,6 +42,7 @@ library EntityLib {
     * @dev Add entity to a list
     * @param _entityName Name of entity.
     * @param _key entity key
+    * @return bool
     */
     function add(EntityStorage storage self, bytes32 _entityName, uint64 _key)
         internal
@@ -61,6 +63,7 @@ library EntityLib {
     * @dev Delete entity from list.
     * @param _entityName Name of entity.
     * @param _key entity key
+    * @return bool
     */
     function remove(EntityStorage storage self, bytes32 _entityName, uint64 _key)
         internal

@@ -8,14 +8,14 @@ module.exports.errTypes = {
     staticStateChange : "static state change"
 };
 
-module.exports.expectThrow = async function(promise, errType) {
+module.exports.expectThrow = async function(promise, errType, message) {
     const PREFIX = "VM Exception while processing transaction: ";
     try {
         await promise;
         throw null;
     }
     catch (error) {
-        assert(error, "Expected an error but did not get one");
+        assert(error, "Expected an error but did not get one: " + message);
         assert(
             error.message.startsWith(PREFIX + errType),
             "Expected an error starting with '" + PREFIX + errType + "' but got '" + error.message + "' instead");

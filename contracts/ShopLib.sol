@@ -4,6 +4,7 @@ import './openzeppelin/math/SafeMath.sol';
 
 /**
  * @title ShopLib
+ * @author Igor Dulger
  * @dev Handle shop data type (CRUD)
  */
 library ShopLib {
@@ -37,12 +38,13 @@ library ShopLib {
     }
 
     /**
-    * @dev Create a new product.
+    * @dev Create a new shop.
     * @param self Reference to entity storage.
     * @param _name Shop name.
     * @param _description Shop description.
     * @param _shopAddress Shop address.
     * @param _owner Shop owner.
+    * @return uint64
     */
     function add(
         ShopStorage storage self,
@@ -68,10 +70,13 @@ library ShopLib {
         emit ShopAdded(msg.sender, self.maxId, _name, _shopAddress, _owner);
         return self.maxId;
     }
+
     /**
     * @dev Get shop.
     * @param self Reference to entity storage.
     * @param _id entity id.
+    * @return uint64, string, string, address, address
+    * //revert    
     */
     function get(
         ShopStorage storage self,
@@ -135,6 +140,14 @@ library ShopLib {
         return true;
     }
 
+    /**
+    * @dev Event for shop adding.
+    * @param actor Who added shop (Indexed).
+    * @param id Shop id (Indexed).
+    * @param name Shop name.
+    * @param shopAddress Address of shop contract.
+    * @param owner Shop owner.
+    */
     event ShopAdded(
         address indexed actor,
         uint64 indexed id,
@@ -143,5 +156,10 @@ library ShopLib {
         address owner
     );
 
+    /**
+    * @dev Event for shop deleting.
+    * @param actor Who deleted shop (Indexed).
+    * @param id shop id (Indexed).
+    */
     event ShopDeleted(address indexed actor, uint64 indexed id);
 }

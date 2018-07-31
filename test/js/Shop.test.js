@@ -38,9 +38,12 @@ contract('Shop', function(accounts) {
     }
 
     beforeEach(function() {
-       return Shop.new("MyTestShop", "This shop is created for testing").then(function(instance) {
-          shop = instance;
-       });
+        return Shop.new(
+            "MyTestShop",
+            "This shop is created for testing"
+        ).then(function(instance) {
+            shop = instance;
+        });
     });
 
     it("should add a product to a shop", async () => {
@@ -76,7 +79,8 @@ contract('Shop', function(accounts) {
 
         await exceptions.expectThrow(
             shop.getProduct(web3.toBigNumber(10), {from: owner}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Product with id 10 doesn't exist"
         );
     });
 
@@ -126,7 +130,8 @@ contract('Shop', function(accounts) {
 
         await exceptions.expectThrow(
             shop.getProduct(web3.toBigNumber(1), {from: owner}),
-            exceptions.errTypes.revert
+            exceptions.errTypes.revert,
+            "Product with id 1 doesn't exist"
         );
     });
 
@@ -140,7 +145,7 @@ contract('Shop', function(accounts) {
         await this.addShop();
 
         count = await shop.getProductCount();
-        let list = await shop.getList(web3.toBigNumber(1),web3.toBigNumber(15));
+        let list = await shop.getProducts(web3.toBigNumber(1),web3.toBigNumber(15));
 
         assert.equal(count, 3, 'Get product count  #2 is invalid');
 
@@ -186,16 +191,16 @@ contract('Shop', function(accounts) {
         await this.addShop();
         await this.addShop();
 
-        let list = await shop.getList(web3.toBigNumber(1), web3.toBigNumber(10));
-        assert.equal(list.join(), "4,5,6", 'getlist #1 is invalid');
+        let list = await shop.getProducts(web3.toBigNumber(1), web3.toBigNumber(10));
+        assert.equal(list.join(), "4,5,6", 'getProducts #1 is invalid');
 
-        list = await shop.getList(web3.toBigNumber(10), web3.toBigNumber(100));
-        assert.equal(list.join(), "4,5,6", 'getlist #2 is invalid');
+        list = await shop.getProducts(web3.toBigNumber(10), web3.toBigNumber(100));
+        assert.equal(list.join(), "4,5,6", 'getProducts #2 is invalid');
 
         let lastId = await shop.getLastProductId();
 
-        list = await shop.getList(web3.toBigNumber(1), web3.toBigNumber(lastId + 1));
-        assert.equal(list.join(), "4,5,6", 'getlist #3 is invalid');
+        list = await shop.getProducts(web3.toBigNumber(1), web3.toBigNumber(lastId + 1));
+        assert.equal(list.join(), "4,5,6", 'getProducts #3 is invalid');
 
         await this.addShop();
         await this.addShop();
@@ -207,8 +212,8 @@ contract('Shop', function(accounts) {
         await shop.deleteProduct(9, {from: owner});
         await shop.deleteProduct(12, {from: owner});
 
-        list = await shop.getList(web3.toBigNumber(1), web3.toBigNumber(100));
-        assert.equal(list.join(), "4,5,6,7,8,10,11", 'getlist #3 is invalid');
+        list = await shop.getProducts(web3.toBigNumber(1), web3.toBigNumber(100));
+        assert.equal(list.join(), "4,5,6,7,8,10,11", 'getProducts #3 is invalid');
     });
 
     it("should return next product", async () => {
@@ -254,7 +259,6 @@ contract('Shop', function(accounts) {
 
 
     it("should buy a product and return extra money to a buyer", async () => {
-        shop = await Shop.new("MyTestShop", "This shop is created for testing");
 
         const name = "Test product";
         const price = web3.toBigNumber(web3.toWei(0.1, 'ether'));

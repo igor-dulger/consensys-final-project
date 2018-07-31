@@ -6,6 +6,12 @@ import "./ProductLib.sol";
 import "./EntityLib.sol";
 import "./Paginable.sol";
 
+
+/**
+ * @title Shop
+ * @author Igor Dulger
+ * @dev Stores products and provides functions for products managibg and selling.
+ */
 contract Shop is Ownable, Destructible, Paginable {
     using SafeMath for uint;
     using ProductLib for ProductLib.ProductStorage;
@@ -18,16 +24,36 @@ contract Shop is Ownable, Destructible, Paginable {
     ProductLib.ProductStorage internal products;
     EntityLib.EntityStorage internal entities;
 
-    modifier checkQuantity(uint64 _id, uint32 _quantity) {
-        require(products.checkQuantity(_id, _quantity) == true);
-        _;
-    }
-
+    /**
+     * @dev Contract constructor
+     * @param _name Shop name
+     * @param _description Shop description
+     */
     constructor(string _name, string _description) public payable {
         name = _name;
         description = _description;
     }
 
+    /**
+     * @dev check if product quantity is enough
+     * @param _id Product id
+     * @param _quantity Expected quantity
+     * // reverts
+     */
+    modifier checkQuantity(uint64 _id, uint32 _quantity) {
+        require(products.checkQuantity(_id, _quantity) == true);
+        _;
+    }
+
+    /**
+    * @dev Create a new product.
+    * @param _name Produce name.
+    * @param _price Product price.
+    * @param _quantity Product quantity.
+    * @param _image IPFS hash of image.
+    * @return uint
+    * //reverts
+    */
     function addProduct(
         string _name,
         uint256 _price,
@@ -43,6 +69,15 @@ contract Shop is Ownable, Destructible, Paginable {
         return id;
     }
 
+    /**
+    * @dev Update product by id.
+    * @param _name Produce name.
+    * @param _price Product price.
+    * @param _quantity Product quantity.
+    * @param _image IPFS hash of image.
+    * @return uint
+    * //reverts
+    */
     function editProduct(
         uint64 _id,
         string _name,
@@ -57,12 +92,25 @@ contract Shop is Ownable, Destructible, Paginable {
         return products.edit(_id, _name, _price, _quantity, _image);
     }
 
+    /**
+    * @dev Delete product.
+    * @param _id Product id to delete.
+    * @return uint
+    * //reverts
+    */
     function deleteProduct(uint64 _id) public onlyOwner returns (bool)
     {
         entities.remove(ENTITY_NAME, _id);
         return products.remove(_id);
     }
 
+    /**
+    * @dev Buy product.
+    * @param _id Product id to buy.
+    * @param _quantity How many items to buy.
+    * @return uint
+    * //reverts
+    */
     function buyProduct(uint64 _id, uint32 _quantity)
         public
         checkQuantity(_id, _quantity)
@@ -79,6 +127,11 @@ contract Shop is Ownable, Destructible, Paginable {
         returnExtra(msg.value, total);
     }
 
+    /**
+    * @dev Get product.
+    * @param _id Product id.
+    * @return (uint64, string, uint256, uint32, string)
+    */
     function getProduct(uint64 _id)
         public
         view
@@ -87,7 +140,14 @@ contract Shop is Ownable, Destructible, Paginable {
         return products.get(_id);
     }
 
-    function getList(uint64 _from, uint16 _count)
+    /**
+    * @dev Get list of product ids. If _from doesn't exist function will start
+    * from a first existing product
+    * @param _from Product id to start with.
+    * @param _count How many products to return.
+    * @return uint64[]
+    */
+    function getProducts(uint64 _from, uint16 _count)
         public
         view
         returns (uint64[])
@@ -98,37 +158,75 @@ contract Shop is Ownable, Destructible, Paginable {
         return entities.getList(ENTITY_NAME, _from, _count);
     }
 
+    /**
+    * @dev Get number of products in the storage.
+    * @return uint64
+    */
     function getProductCount() public view returns (uint64) {
         return products.getProductCount();
     }
 
+    /**
+    * @dev Get last product id.
+    * @return uint64
+    */
     function getLastProductId() public view returns (uint64)
     {
         return products.getLastProductId();
     }
 
+    /**
+    * @dev Get next product id
+    * @param _id product id.
+    * @return uint64
+    */
     function getNext(uint64 _id) public view returns (uint64) {
         return entities.getNextId(ENTITY_NAME, _id);
     }
 
+    /**
+    * @dev Get prev product id
+    * @param _id product id.
+    * @return uint64
+    */
     function getPrev(uint64 _id) public view returns (uint64) {
         return entities.getPrevId(ENTITY_NAME, _id);
     }
 
+    /**
+    * @dev Get first existing product id
+    * @return uint64
+    */
     function getFirst() public view returns (uint64) {
         return entities.getNextId(ENTITY_NAME, 0);
     }
 
+    /**
+    * @dev Get last existing product id
+    * @return uint64
+    */
     function getLast() public view returns (uint64) {
         return entities.getPrevId(ENTITY_NAME, 0);
     }
 
+    /**
+    * @dev withdraw ether to the shop owner
+    * @param value amount to withdraw.
+    * @return bool
+    * //revert
+    */
     function withdraw(uint value) public onlyOwner returns (bool) {
         require(value > address(this).balance);
         address(owner).transfer(value);
         return true;
     }
 
+    /**
+    * @dev return extra money to a buyer
+    * @param value how much money buyer sent.
+    * @param amount how much money buyer spent.
+    * @return bool
+    */
     function returnExtra(uint value, uint amount) private returns (bool) {
         if (value > amount) {
             msg.sender.transfer(value.sub(amount));
@@ -138,6 +236,14 @@ contract Shop is Ownable, Destructible, Paginable {
         }
     }
 
+    /**
+    * @dev Event for adding a product.
+    * @param actor Who added product (Indexed).
+    * @param id Product id (Indexed).
+    * @param name Product name.
+    * @param price Product price.
+    * @param quantity Product quantity.
+    */
     event ProductAdded(
         address indexed actor,
         uint64 indexed id,
@@ -146,6 +252,14 @@ contract Shop is Ownable, Destructible, Paginable {
         uint32 quantity
     );
 
+    /**
+    * @dev Event for product editing.
+    * @param actor Who edited product (Indexed).
+    * @param id Product id (Indexed).
+    * @param name Product name.
+    * @param price Product price.
+    * @param quantity Product quantity.
+    */
     event ProductEdited(
         address indexed actor,
         uint64 indexed id,
@@ -154,12 +268,32 @@ contract Shop is Ownable, Destructible, Paginable {
         uint32 quantity
     );
 
+    /**
+    * @dev Event for changing product quantity.
+    * @param actor Who edited product (Indexed).
+    * @param id Product id (Indexed).
+    * @param quantity Product quantity.
+    */
     event ProductQuantityDecreased(
         address indexed actor,
         uint64 indexed id,
         uint32 quantity
     );
 
+    /**
+    * @dev Event for product deleting.
+    * @param actor Who deleted product (Indexed).
+    * @param id Product id (Indexed).
+    */
+    event ProductDeleted(address indexed actor, uint64 indexed id);
+
+    /**
+    * @dev Event for product selling.
+    * @param actor Who bought product (Indexed).
+    * @param id Product id (Indexed).
+    * @param quantity Product quantity.
+    * @param total Total amount.
+    */
     event ProductSold(
         address indexed actor,
         uint64 indexed id,
@@ -167,11 +301,15 @@ contract Shop is Ownable, Destructible, Paginable {
         uint total
     );
 
+    /**
+    * @dev Event for page size editing.
+    * @param actor Who changed page size (Indexed).
+    * @param to New size (Indexed).
+    * @param from Old size (Indexed).
+    */
     event PageSizeChanged(
         address indexed actor,
         uint16 indexed to,
         uint16 indexed from
     );
-
-    event ProductDeleted(address indexed actor, uint64 indexed id);
 }

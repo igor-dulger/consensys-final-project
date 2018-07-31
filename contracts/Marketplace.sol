@@ -7,6 +7,11 @@ import "./EntityLib.sol";
 import "./ShopLib.sol";
 import "./Shop.sol";
 
+/**
+ * @title Marketplace
+ * @author Igor Dulger
+ * @dev Factory of shops with roles management.
+ */
 contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     using SafeMath for uint;
     using ShopLib for ShopLib.ShopStorage;
@@ -17,26 +22,57 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     ShopLib.ShopStorage internal shops;
     EntityLib.EntityStorage internal entities;
 
+    /**
+    * @dev Add admin role to an address.
+    * @param _addr account address
+    * @return bool
+    * //revert
+    */
     function addAdmin(address _addr) public onlyOwner returns(bool) {
         addRole(_addr, ROLE_ADMIN);
         return true;
     }
 
+    /**
+    * @dev Remove admin role from an address.
+    * @param _addr account address
+    * @return bool
+    * //revert
+    */
     function removeAdmin(address _addr) public onlyOwner returns(bool) {
         removeRole(_addr, ROLE_ADMIN);
         return true;
     }
 
+    /**
+    * @dev Add seller role to an address.
+    * @param _addr account address
+    * @return bool
+    * //revert
+    */
     function addSeller(address _addr) public onlyOwnerOrAdmin returns(bool) {
         addRole(_addr, ROLE_SELLER);
         return true;
     }
 
+    /**
+    * @dev Remove seller role from an address.
+    * @param _addr account address
+    * @return bool
+    * //revert
+    */
     function removeSeller(address _addr) public onlyOwnerOrAdmin returns(bool) {
         removeRole(_addr, ROLE_SELLER);
         return true;
     }
 
+    /**
+    * @dev Create a new shop.
+    * @param _name Shop name.
+    * @param _description Shop description.
+    * @return bool
+    * //revert
+    */
     function createShop(string _name, string _description)
         public
         onlySeller
@@ -50,6 +86,12 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         return true;
     }
 
+    /**
+    * @dev Delete shop
+    * @param _id shop id to delete.
+    * @return bool
+    * //revert
+    */
     function deleteShop(uint64 _id)
         public
         onlySeller
@@ -64,6 +106,12 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         return true;
     }
 
+    /**
+    * @dev Get shop.
+    * @param _id shop id.
+    * @return uint64, string, string, address, address
+    * //revert
+    */
     function getShop(uint64 _id)
         public
         view
@@ -72,6 +120,13 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         return shops.get(_id);
     }
 
+    /**
+    * @dev Get list of shop ids. If _from doesn't exist function will start
+    * from a first existing shop
+    * @param _from shop id to start with.
+    * @param _count How many shops to return.
+    * @return uint64[]
+    */
     function getShops(uint64 _from, uint16 _count)
         public
         view
@@ -83,6 +138,14 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         return entities.getList(SHOPS_LIST, _from, _count);
     }
 
+    /**
+    * @dev Get list of shop ids owned by a seller. If _from doesn't exist function will start
+    * from a first existing shop
+    * @param _seller seller address.
+    * @param _from shop id to start with.
+    * @param _count How many shops to return.
+    * @return uint64[]
+    */
     function getSellerShops(address _seller, uint64 _from, uint16 _count)
         public
         view
@@ -94,6 +157,11 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         return entities.getList(getShopListName(_seller), _from, _count);
     }
 
+    /**
+    * @dev Generate key for mapping which stores shop ids by sellers
+    * @param _addr seller address.
+    * @return bytes32
+    */
     function getShopListName(address _addr)
         private
         pure
@@ -102,6 +170,14 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         return keccak256(abi.encodePacked(SHOPS_LIST, _addr));
     }
 
+    /**
+    * @dev Event for shop adding.
+    * @param actor Who added shop (Indexed).
+    * @param id Shop id (Indexed).
+    * @param name Shop name.
+    * @param shopAddress Address of shop contract.
+    * @param owner Shop owner.
+    */
     event ShopAdded(
         address indexed actor,
         uint64 indexed id,
@@ -110,6 +186,11 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         address owner
     );
 
+    /**
+    * @dev Event for shop deleting.
+    * @param actor Who deleted shop (Indexed).
+    * @param id shop id (Indexed).
+    */
     event ShopDeleted(address indexed actor, uint64 indexed id);
 
 }

@@ -2,6 +2,11 @@ pragma solidity ^0.4.24;
 
 import "./openzeppelin/ownership/Ownable.sol";
 
+/**
+ * @title Paginable
+ * @author Igor Dulger
+ * @dev Handle setters and getters for page size
+ */
 contract Paginable is Ownable {
 
     uint16 internal pageSize;
@@ -36,6 +41,12 @@ contract Paginable is Ownable {
         return pageSize;
     }
 
+    /**
+    * @dev Event for page size editing.
+    * @param actor Who changed page size (Indexed).
+    * @param to New size (Indexed).
+    * @param from Old size (Indexed).
+    */
     event PageSizeChanged(
         address indexed actor,
         uint16 indexed to,

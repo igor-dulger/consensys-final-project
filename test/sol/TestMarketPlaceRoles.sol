@@ -2,8 +2,7 @@ pragma solidity ^0.4.20;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../contracts/MarketplaceRoles.sol";
-import "./RequireProxy.sol";
+import "../../contracts/MarketplaceRoles.sol";
 import "./ThrowHandler.sol";
 
 contract TestMarketPlaceRoles is MarketplaceRoles, ThrowHandler {

@@ -58,6 +58,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         (uint64 id, , , , address shopOwner) = shops.get(_id);
         require(id == _id);
         require(shopOwner == msg.sender);
+        shops.remove(_id);
         entities.remove(SHOPS_LIST, id);
         entities.remove(getShopListName(msg.sender), id);
         return true;
@@ -82,7 +83,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         return entities.getList(SHOPS_LIST, _from, _count);
     }
 
-    function getShops(address _seller, uint64 _from, uint16 _count)
+    function getSellerShops(address _seller, uint64 _from, uint16 _count)
         public
         view
         returns (uint64[])
@@ -100,5 +101,15 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     {
         return keccak256(abi.encodePacked(SHOPS_LIST, _addr));
     }
+
+    event ShopAdded(
+        address indexed actor,
+        uint64 indexed id,
+        string name,
+        address indexed shopAddress,
+        address owner
+    );
+
+    event ShopDeleted(address indexed actor, uint64 indexed id);
 
 }

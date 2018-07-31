@@ -2,7 +2,7 @@ pragma solidity ^0.4.20;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../contracts/ProductLib.sol";
+import "../../contracts/ProductLib.sol";
 import "./ThrowHandler.sol";
 
 contract TestProductLib is ThrowHandler {

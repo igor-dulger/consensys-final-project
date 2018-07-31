@@ -2,7 +2,7 @@ pragma solidity ^0.4.20;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../contracts/ShopLib.sol";
+import "../../contracts/ShopLib.sol";
 import "./ThrowHandler.sol";
 
 contract TestShopLib is ThrowHandler{
@@ -52,6 +52,15 @@ contract TestShopLib is ThrowHandler{
             "description should be valid"
         );
         Assert.equal(shops.entities[newId].name, name, "Name should be valid");
+
+        Assert.equal(uint(shops.maxId), uint(1), "Max id should valid");
+        Assert.equal(uint(shops.count), uint(1), "Count should be valid");
+
+        newId = shops.add(name, description, shopAddress, owner);
+
+        Assert.equal(uint(newId), uint(2), "Max id should valid");
+        Assert.equal(uint(shops.maxId), uint(2), "Max id should valid");
+        Assert.equal(uint(shops.count), uint(2), "Count should be valid");
     }
 
     function testGet() public {
@@ -84,7 +93,7 @@ contract TestShopLib is ThrowHandler{
 
     function testGetLastId() public {
         // Arrange
-        uint expected = 1;
+        uint expected = 2;
 
         // Act
         uint actual = shops.getLastId();
@@ -95,7 +104,7 @@ contract TestShopLib is ThrowHandler{
 
     function testGetCount() public {
         // Arrange
-        uint expected = 1;
+        uint expected = 2;
 
         // Act
         uint actual = shops.getCount();
@@ -113,8 +122,8 @@ contract TestShopLib is ThrowHandler{
 
         // Assert
         Assert.equal(true, actual, "Remove has to return true");
-        Assert.equal(shops.count, uint(0), "Count should be set");
-        Assert.equal(shops.maxId, uint(1), "Max id shouldn't be changed");
+        Assert.equal(shops.count, uint(1), "Count should be set");
+        Assert.equal(shops.maxId, uint(2), "Max id shouldn't be changed");
         Assert.equal(shops.entities[id].id, uint(0), "Id of deleted shop should be empty");
     }
 }

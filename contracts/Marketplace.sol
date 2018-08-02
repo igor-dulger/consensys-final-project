@@ -50,7 +50,12 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     * @return bool
     * //revert
     */
-    function addSeller(address _addr) public onlyOwnerOrAdmin returns(bool) {
+    function addSeller(address _addr)
+        public
+        onlyOwnerOrAdmin
+
+        returns(bool)
+    {
         addRole(_addr, ROLE_SELLER);
         return true;
     }
@@ -61,7 +66,12 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     * @return bool
     * //revert
     */
-    function removeSeller(address _addr) public onlyOwnerOrAdmin returns(bool) {
+    function removeSeller(address _addr)
+        public
+        onlyOwnerOrAdmin
+
+        returns(bool)
+    {
         removeRole(_addr, ROLE_SELLER);
         return true;
     }
@@ -76,6 +86,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     function createShop(string _name, string _description)
         public
         onlySeller
+
         returns(bool)
     {
         Shop shop = new Shop(_name, _description);
@@ -95,6 +106,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     function deleteShop(uint64 _id)
         public
         onlySeller
+
         returns(bool)
     {
         (uint64 id, , , , address shopOwner) = shops.get(_id);
@@ -114,6 +126,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     */
     function getShop(uint64 _id)
         public
+
         view
         returns (uint64, string, string, address, address)
     {
@@ -129,6 +142,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     */
     function getShops(uint64 _from, uint16 _count)
         public
+
         view
         returns (uint64[])
     {
@@ -148,6 +162,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     */
     function getSellerShops(address _seller, uint64 _from, uint16 _count)
         public
+
         view
         returns (uint64[])
     {

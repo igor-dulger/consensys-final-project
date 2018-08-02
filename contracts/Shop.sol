@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./openzeppelin/ownership/Ownable.sol";
-import "./openzeppelin/lifecycle/Destructible.sol";
+import "./openzeppelin/lifecycle/Pausable.sol";
 import "./ProductLib.sol";
 import "./EntityLib.sol";
 import "./Paginable.sol";
@@ -12,7 +12,7 @@ import "./Paginable.sol";
  * @author Igor Dulger
  * @dev Stores products and provides functions for products managibg and selling.
  */
-contract Shop is Ownable, Destructible, Paginable {
+contract Shop is Ownable, Pausable, Paginable {
     using SafeMath for uint;
     using ProductLib for ProductLib.ProductStorage;
     using EntityLib for EntityLib.EntityStorage;
@@ -62,6 +62,7 @@ contract Shop is Ownable, Destructible, Paginable {
     )
         public
         onlyOwner
+
         returns (uint64)
     {
         uint64 id = products.add(_name, _price, _quantity, _image);
@@ -87,6 +88,7 @@ contract Shop is Ownable, Destructible, Paginable {
     )
         public
         onlyOwner
+
         returns (uint)
     {
         return products.edit(_id, _name, _price, _quantity, _image);
@@ -98,7 +100,11 @@ contract Shop is Ownable, Destructible, Paginable {
     * @return uint
     * //reverts
     */
-    function deleteProduct(uint64 _id) public onlyOwner returns (bool)
+    function deleteProduct(uint64 _id)
+        public
+        onlyOwner
+
+        returns (bool)
     {
         entities.remove(ENTITY_NAME, _id);
         return products.remove(_id);
@@ -113,6 +119,7 @@ contract Shop is Ownable, Destructible, Paginable {
     */
     function buyProduct(uint64 _id, uint32 _quantity)
         public
+        whenNotPaused
         checkQuantity(_id, _quantity)
         payable
         returns (uint64)
@@ -134,6 +141,7 @@ contract Shop is Ownable, Destructible, Paginable {
     */
     function getProduct(uint64 _id)
         public
+        whenNotPaused
         view
         returns (uint64, string, uint256, uint32, string)
     {
@@ -149,6 +157,7 @@ contract Shop is Ownable, Destructible, Paginable {
     */
     function getProducts(uint64 _from, uint16 _count)
         public
+        whenNotPaused
         view
         returns (uint64[])
     {
@@ -162,7 +171,7 @@ contract Shop is Ownable, Destructible, Paginable {
     * @dev Get number of products in the storage.
     * @return uint64
     */
-    function getProductCount() public view returns (uint64) {
+    function getProductCount() public  view returns (uint64) {
         return products.getProductCount();
     }
 
@@ -170,43 +179,9 @@ contract Shop is Ownable, Destructible, Paginable {
     * @dev Get last product id.
     * @return uint64
     */
-    function getLastProductId() public view returns (uint64)
+    function getLastProductId() public  view returns (uint64)
     {
         return products.getLastProductId();
-    }
-
-    /**
-    * @dev Get next product id
-    * @param _id product id.
-    * @return uint64
-    */
-    function getNext(uint64 _id) public view returns (uint64) {
-        return entities.getNextId(ENTITY_NAME, _id);
-    }
-
-    /**
-    * @dev Get prev product id
-    * @param _id product id.
-    * @return uint64
-    */
-    function getPrev(uint64 _id) public view returns (uint64) {
-        return entities.getPrevId(ENTITY_NAME, _id);
-    }
-
-    /**
-    * @dev Get first existing product id
-    * @return uint64
-    */
-    function getFirst() public view returns (uint64) {
-        return entities.getNextId(ENTITY_NAME, 0);
-    }
-
-    /**
-    * @dev Get last existing product id
-    * @return uint64
-    */
-    function getLast() public view returns (uint64) {
-        return entities.getPrevId(ENTITY_NAME, 0);
     }
 
     /**
@@ -215,7 +190,7 @@ contract Shop is Ownable, Destructible, Paginable {
     * @return bool
     * //revert
     */
-    function withdraw(uint value) public onlyOwner returns (bool) {
+    function withdraw(uint value) public onlyOwner   returns (bool) {
         require(value > address(this).balance);
         address(owner).transfer(value);
         return true;

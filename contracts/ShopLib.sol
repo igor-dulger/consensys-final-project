@@ -1,6 +1,6 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
-import './openzeppelin/math/SafeMath.sol';
+import "./openzeppelin/math/SafeMath.sol";
 
 /**
  * @title ShopLib
@@ -33,7 +33,7 @@ library ShopLib {
     */
 
     modifier inStorage(ShopStorage storage self, uint64 _id) {
-        require(self.entities[_id].id == _id);
+        require(_id != 0 && self.entities[_id].id == _id);        
         _;
     }
 
@@ -76,7 +76,7 @@ library ShopLib {
     * @param self Reference to entity storage.
     * @param _id entity id.
     * @return uint64, string, string, address, address
-    * //revert    
+    * //revert
     */
     function get(
         ShopStorage storage self,

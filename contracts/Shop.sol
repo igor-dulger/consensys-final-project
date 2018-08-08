@@ -1,10 +1,10 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./openzeppelin/ownership/Ownable.sol";
 import "./openzeppelin/lifecycle/Pausable.sol";
 import "./ProductLib.sol";
 import "./EntityLib.sol";
-import "./Paginable.sol";
+//import "./Paginable.sol";
 
 
 /**
@@ -12,14 +12,14 @@ import "./Paginable.sol";
  * @author Igor Dulger
  * @dev Stores products and provides functions for products managibg and selling.
  */
-contract Shop is Ownable, Pausable, Paginable {
+contract Shop is Ownable, Pausable {
     using SafeMath for uint;
     using ProductLib for ProductLib.ProductStorage;
     using EntityLib for EntityLib.EntityStorage;
 
     string public name;
     string public description;
-    bytes32 public constant ENTITY_NAME = "products";
+    bytes32 internal constant ENTITY_NAME = "products";
 
     ProductLib.ProductStorage internal products;
     EntityLib.EntityStorage internal entities;
@@ -41,7 +41,9 @@ contract Shop is Ownable, Pausable, Paginable {
      * // reverts
      */
     modifier checkQuantity(uint64 _id, uint32 _quantity) {
-        require(products.checkQuantity(_id, _quantity) == true);
+        require(
+            products.checkQuantity(_id, _quantity) == true
+        );
         _;
     }
 
@@ -60,7 +62,7 @@ contract Shop is Ownable, Pausable, Paginable {
         uint32 _quantity,
         string _image
     )
-        public
+        external
         onlyOwner
 
         returns (uint64)
@@ -86,7 +88,7 @@ contract Shop is Ownable, Pausable, Paginable {
         uint32 _quantity,
         string _image
     )
-        public
+        external
         onlyOwner
 
         returns (uint)
@@ -101,7 +103,7 @@ contract Shop is Ownable, Pausable, Paginable {
     * //reverts
     */
     function deleteProduct(uint64 _id)
-        public
+        external
         onlyOwner
 
         returns (bool)
@@ -118,7 +120,7 @@ contract Shop is Ownable, Pausable, Paginable {
     * //reverts
     */
     function buyProduct(uint64 _id, uint32 _quantity)
-        public
+        external
         whenNotPaused
         checkQuantity(_id, _quantity)
         payable
@@ -140,7 +142,7 @@ contract Shop is Ownable, Pausable, Paginable {
     * @return (uint64, string, uint256, uint32, string)
     */
     function getProduct(uint64 _id)
-        public
+        external
         whenNotPaused
         view
         returns (uint64, string, uint256, uint32, string)
@@ -155,23 +157,26 @@ contract Shop is Ownable, Pausable, Paginable {
     * @param _count How many products to return.
     * @return uint64[]
     */
-    function getProducts(uint64 _from, uint16 _count)
-        public
+    /* function getProducts(uint64 _from, uint16 _count)
+        external
         whenNotPaused
         view
         returns (uint64[])
     {
+        uint16 count = 0;
         if (_count > pageSize) {
-            _count = pageSize;
+            count = pageSize;
+        } else {
+            count = _count;
         }
-        return entities.getList(ENTITY_NAME, _from, _count);
-    }
+        return entities.getList(ENTITY_NAME, _from, count);
+    } */
 
     /**
     * @dev Get number of products in the storage.
     * @return uint64
     */
-    function getProductCount() public  view returns (uint64) {
+    function getProductCount() external  view returns (uint64) {
         return products.getProductCount();
     }
 
@@ -179,9 +184,25 @@ contract Shop is Ownable, Pausable, Paginable {
     * @dev Get last product id.
     * @return uint64
     */
-    function getLastProductId() public  view returns (uint64)
+    /* function getLastProductId() external  view returns (uint64)
     {
         return products.getLastProductId();
+    } */
+
+
+    /**
+    * @dev next existing product
+    * @param _id product id
+    * @return (uint64, string, uint256, uint32, string)
+    * //revert
+    */
+
+    function getNext(uint64 _id)
+        public
+        view
+        returns(uint64, string, uint256, uint32, string)
+    {
+        return products.get(entities.getNextId(ENTITY_NAME, _id));
     }
 
     /**
@@ -190,8 +211,9 @@ contract Shop is Ownable, Pausable, Paginable {
     * @return bool
     * //revert
     */
-    function withdraw(uint value) public onlyOwner   returns (bool) {
-        require(value > address(this).balance);
+
+    function withdraw(uint value) external onlyOwner   returns (bool) {
+        require(value < address(this).balance);
         address(owner).transfer(value);
         return true;
     }

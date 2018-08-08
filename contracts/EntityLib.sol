@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 /**
  * @title EntityList
@@ -91,19 +91,20 @@ library EntityLib {
     * @param _from Starting id to get.
     * @param _count End id to get.
     */
-    function getList(EntityStorage storage self, bytes32 _entityName, uint64 _from, uint _count)
+    /* function getList(EntityStorage storage self, bytes32 _entityName, uint64 _from, uint _count)
         internal
         view
         returns (uint64[])
     {
         uint64[] memory result;
+        uint64 counter = 0;
+        uint64 from = _from;
 
         if (getId(self, _entityName, _from) == 0) {
-            _from = getNextId(self, _entityName, 0);
+            from = getNextId(self, _entityName, 0);
         }
 
-        uint64 counter = 0;
-        uint64 current = _from;
+        uint64 current = from;
 
         while (current != 0 && counter < _count) {
             current = getNextId(self, _entityName, current);
@@ -113,7 +114,7 @@ library EntityLib {
         result = new uint64[](counter);
 
         counter = 0;
-        current = _from;
+        current = from;
         while (current != 0 && counter < _count) {
             result[counter] = current;
             current = getNextId(self, _entityName, current);
@@ -121,7 +122,7 @@ library EntityLib {
         }
 
         return result;
-    }
+    } */
 
     /**
     * @dev Get id from mapping

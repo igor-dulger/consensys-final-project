@@ -137,6 +137,12 @@ contract TestProductLib is ThrowHandler {
         Assert.isFalse(execute('decreaseQuantityToMuch()'), "Should fail over limit");
     }
 
+
+    function removeNotExisting() public {
+        uint64 id = 1000;
+        products.remove(id);
+    }
+
     function testRemove() public {
         // Arrange
         uint64 id = 1;
@@ -146,6 +152,7 @@ contract TestProductLib is ThrowHandler {
 
         // Assert
         Assert.equal(true, actual, "Destroy has to return true");
+        Assert.isFalse(execute('removeNotExisting()'), "expected revert, id doesn't exists");
         Assert.equal(products.productCount, uint(0), "Product count should be set");
         Assert.equal(products.productMaxId, uint(1), "Max id shouldn't be changed");
         Assert.equal(products.entities[id].id, uint(0), "Id of deleted product should be empty");

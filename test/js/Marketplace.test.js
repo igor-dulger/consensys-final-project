@@ -22,7 +22,7 @@ contract('Marketplace', function(accounts) {
 
     it("give an admin role, allowable only for an owner", async () => {
         assert.isFalse(await contract.isAdmin(admin), "shouldn't have admin role yet");
-        await contract.addAdmin(admin, {from: owner});
+        let tx = await contract.addAdmin(admin, {from: owner});
         assert.isTrue(await contract.isAdmin(admin), "shouldn have admin role");
 
         //Marketplace seller can't add admin role
@@ -237,7 +237,7 @@ contract('Marketplace', function(accounts) {
         assert.equal(seller, o, 'incorrect owner was got from contract');
     });
 
-    it("should return list of shop ids", async () => {
+    it("should return next shop ids", async () => {
 
         const name = "Shop name";
         const description = "Shop description";
@@ -252,35 +252,108 @@ contract('Marketplace', function(accounts) {
         contract.createShop(name, description, {from: seller2});
         contract.createShop(name, description, {from: seller2});
 
-        let list = await contract.getShops(web3.toBigNumber(1),web3.toBigNumber(10));
-        assert.equal(list.join(), [1,2,3,4,5,6], 'incorrect list got from contract');
 
-        list = await contract.getSellerShops(seller, web3.toBigNumber(1), web3.toBigNumber(10));
-        assert.equal(list.join(), [1,2,3], 'incorrect list for seller');
+        let [i, n, d, a, o] = await contract.getNext(web3.toBigNumber(0));
+        assert.equal(i.toString(), 1, 'incorrect next 1 shop got from contract');
 
-        list = await contract.getSellerShops(seller2, web3.toBigNumber(1), web3.toBigNumber(10));
-        assert.equal(list.join(), [4,5,6], 'incorrect list for seller2');
+        [i, n, d, a, o] = await contract.getNext(web3.toBigNumber(3));
+        assert.equal(i.toString(), 4, 'incorrect next 3 shop got from contract');
 
-        contract.deleteShop(web3.toBigNumber(1), {from: seller});
-        contract.deleteShop(web3.toBigNumber(5), {from: seller2});
+        await exceptions.expectThrow(
+            contract.getNext(web3.toBigNumber(6)),
+            exceptions.errTypes.revert,
+            "End of shop list expected"
+        );
 
-        list = await contract.getSellerShops(seller, web3.toBigNumber(1), web3.toBigNumber(10));
-        assert.equal([2,3], list.join(), 'incorrect list for seller');
+        await exceptions.expectThrow(
+            contract.getNext(web3.toBigNumber(100)),
+            exceptions.errTypes.revert,
+            "Next of unexisting element"
+        );
 
-        list = await contract.getSellerShops(seller2, web3.toBigNumber(1), web3.toBigNumber(10));
-        assert.equal([4,6], list.join(), 'incorrect list for seller2');
-
-        contract.createShop(name, description, {from: seller});
-        contract.createShop(name, description, {from: seller});
-        contract.createShop(name, description, {from: seller});
-        contract.createShop(name, description, {from: seller2});
-        contract.createShop(name, description, {from: seller2});
-        contract.createShop(name, description, {from: seller2});
-        contract.createShop(name, description, {from: seller});
-        contract.createShop(name, description, {from: seller});
-
-        //page size is 10, so only 10 ids is expected
-        list = await contract.getShops(web3.toBigNumber(1),web3.toBigNumber(20));
-        assert.equal(list.join(), [2,3,4,6,7,8,9,10,11,12], 'incorrect list got from contract');
     });
+
+    it("should return next shop id for sellers", async () => {
+
+        const name = "Shop name";
+        const description = "Shop description";
+
+        await contract.addSeller(seller, {from: owner});
+        await contract.addSeller(seller2, {from: owner});
+
+        contract.createShop(name, description, {from: seller});
+        contract.createShop(name, description, {from: seller});
+        contract.createShop(name, description, {from: seller});
+        contract.createShop(name, description, {from: seller2});
+        contract.createShop(name, description, {from: seller2});
+        contract.createShop(name, description, {from: seller2});
+
+
+        let [i, n, d, a, o] = await contract.getSellersNext(seller, web3.toBigNumber(0));
+        assert.equal(i.toString(), 1, 'incorrect next 1 shop got for seller');
+
+        [i, n, d, a, o] = await contract.getSellersNext(seller, web3.toBigNumber(2));
+        assert.equal(i.toString(), 3, 'incorrect next 3 shop got for seller');
+
+        await exceptions.expectThrow(
+            contract.getSellersNext(seller, web3.toBigNumber(3)),
+            exceptions.errTypes.revert,
+            "End of shop list expected for seller"
+        );
+
+        await exceptions.expectThrow(
+            contract.getSellersNext(seller, web3.toBigNumber(100)),
+            exceptions.errTypes.revert,
+            "Next of unexisting element for seller"
+        );
+
+        [i, n, d, a, o] = await contract.getSellersNext(seller2, web3.toBigNumber(0));
+        assert.equal(i.toString(), 4, 'incorrect next 1 shop got for seller2');
+
+        [i, n, d, a, o] = await contract.getSellersNext(seller2, web3.toBigNumber(4));
+        assert.equal(i.toString(), 5, 'incorrect next 3 shop got for seller2');
+
+        await exceptions.expectThrow(
+            contract.getSellersNext(seller2, web3.toBigNumber(6)),
+            exceptions.errTypes.revert,
+            "End of shop list expected for seller2"
+        );
+
+        await exceptions.expectThrow(
+            contract.getSellersNext(seller2, web3.toBigNumber(100)),
+            exceptions.errTypes.revert,
+            "Next of unexisting element for seller2"
+        );
+    });
+
+
+    // it("should return next shop ids", async () => {
+    //     list = await contract.getSellerShops(seller, web3.toBigNumber(1), web3.toBigNumber(10));
+    //     assert.equal(list.join(), [1,2,3], 'incorrect list for seller');
+    //
+    //     list = await contract.getSellerShops(seller2, web3.toBigNumber(1), web3.toBigNumber(10));
+    //     assert.equal(list.join(), [4,5,6], 'incorrect list for seller2');
+    //
+    //     contract.deleteShop(web3.toBigNumber(1), {from: seller});
+    //     contract.deleteShop(web3.toBigNumber(5), {from: seller2});
+    //
+    //     list = await contract.getSellerShops(seller, web3.toBigNumber(1), web3.toBigNumber(10));
+    //     assert.equal([2,3], list.join(), 'incorrect list for seller');
+    //
+    //     list = await contract.getSellerShops(seller2, web3.toBigNumber(1), web3.toBigNumber(10));
+    //     assert.equal([4,6], list.join(), 'incorrect list for seller2');
+    //
+    //     contract.createShop(name, description, {from: seller});
+    //     contract.createShop(name, description, {from: seller});
+    //     contract.createShop(name, description, {from: seller});
+    //     contract.createShop(name, description, {from: seller2});
+    //     contract.createShop(name, description, {from: seller2});
+    //     contract.createShop(name, description, {from: seller2});
+    //     contract.createShop(name, description, {from: seller});
+    //     contract.createShop(name, description, {from: seller});
+    //
+    //     //page size is 10, so only 10 ids is expected
+    //     list = await contract.getShops(web3.toBigNumber(1),web3.toBigNumber(20));
+    //     assert.equal(list.join(), [2,3,4,6,7,8,9,10,11,12], 'incorrect list got from contract');
+    // });
 });

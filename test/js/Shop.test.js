@@ -17,6 +17,7 @@ contract('Shop', function(accounts) {
     }
 
     createTestSet = async function() {
+        let list
         await this.addShop();
         await this.addShop();
         await this.addShop();
@@ -32,7 +33,6 @@ contract('Shop', function(accounts) {
         await this.addShop();
         await this.addShop();
         await this.addShop();
-
         await shop.deleteProduct(9, {from: owner});
         await shop.deleteProduct(12, {from: owner});
     }
@@ -40,7 +40,8 @@ contract('Shop', function(accounts) {
     beforeEach(function() {
         return Shop.new(
             "MyTestShop",
-            "This shop is created for testing"
+            "This shop is created for testing",
+            {value: web3.toWei(0.1, 'ether')}
         ).then(function(instance) {
             shop = instance;
         });
@@ -145,8 +146,6 @@ contract('Shop', function(accounts) {
         await this.addShop();
 
         count = await shop.getProductCount();
-        let list = await shop.getProducts(web3.toBigNumber(1),web3.toBigNumber(15));
-
         assert.equal(count, 3, 'Get product count  #2 is invalid');
 
         await shop.deleteProduct(web3.toBigNumber(1), {from: owner});
@@ -161,74 +160,99 @@ contract('Shop', function(accounts) {
         assert.equal(count, 0, 'Get product count  #4 is invalid');
     });
 
-    it("should show last product id", async () => {
-        await this.addShop();
-        await this.addShop();
-        await this.addShop();
-        await shop.deleteProduct(web3.toBigNumber(1), {from: owner});
-        await shop.deleteProduct(web3.toBigNumber(2), {from: owner});
-        await shop.deleteProduct(web3.toBigNumber(3), {from: owner});
-
-        let maxId = await shop.getLastProductId();
-        assert.equal(maxId, 3, 'last product id #1 is invalid');
-
-        await this.addShop();
-        await this.addShop();
-        await this.addShop();
-
-        maxId = await shop.getLastProductId();
-        assert.equal(maxId, 6, 'last product id #1 is invalid');
-    });
-
-    it("should show product list", async () => {
-        await this.addShop();
-        await this.addShop();
-        await this.addShop();
-        await shop.deleteProduct(web3.toBigNumber(1), {from: owner});
-        await shop.deleteProduct(web3.toBigNumber(2), {from: owner});
-        await shop.deleteProduct(web3.toBigNumber(3), {from: owner});
-        await this.addShop();
-        await this.addShop();
-        await this.addShop();
-
-        let list = await shop.getProducts(web3.toBigNumber(1), web3.toBigNumber(10));
-        assert.equal(list.join(), "4,5,6", 'getProducts #1 is invalid');
-
-        list = await shop.getProducts(web3.toBigNumber(10), web3.toBigNumber(100));
-        assert.equal(list.join(), "4,5,6", 'getProducts #2 is invalid');
-
-        let lastId = await shop.getLastProductId();
-
-        list = await shop.getProducts(web3.toBigNumber(1), web3.toBigNumber(lastId + 1));
-        assert.equal(list.join(), "4,5,6", 'getProducts #3 is invalid');
-
-        await this.addShop();
-        await this.addShop();
-        await this.addShop();
-        await this.addShop();
-        await this.addShop();
-        await this.addShop();
-
-        await shop.deleteProduct(9, {from: owner});
-        await shop.deleteProduct(12, {from: owner});
-
-        list = await shop.getProducts(web3.toBigNumber(1), web3.toBigNumber(100));
-        assert.equal(list.join(), "4,5,6,7,8,10,11", 'getProducts #3 is invalid');
-    });
-
-    // it("should return next product", async () => {
-    //     await createTestSet();
-    //     //"4,5,6,7,8,10,11"
-    //     let id = await shop.getNext(4);
-    //     assert.equal(id.toString(), 5, 'get next after 4');
+    // it("should show last product id", async () => {
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await shop.deleteProduct(web3.toBigNumber(1), {from: owner});
+    //     await shop.deleteProduct(web3.toBigNumber(2), {from: owner});
+    //     await shop.deleteProduct(web3.toBigNumber(3), {from: owner});
     //
-    //     id = await shop.getNext(1);
-    //     assert.equal(id.toString(), 0, 'get next after 1');
+    //     let maxId = await shop.getLastProductId();
+    //     assert.equal(maxId, 3, 'last product id #1 is invalid');
     //
-    //     id = await shop.getNext(11);
-    //     assert.equal(id.toString(), 0, 'get next after 11');
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await this.addShop();
     //
+    //     maxId = await shop.getLastProductId();
+    //     assert.equal(maxId, 6, 'last product id #1 is invalid');
     // });
+
+    // it("should show product list", async () => {
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await shop.deleteProduct(web3.toBigNumber(1), {from: owner});
+    //     await shop.deleteProduct(web3.toBigNumber(2), {from: owner});
+    //     await shop.deleteProduct(web3.toBigNumber(3), {from: owner});
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await this.addShop();
+    //
+    //     let list = await shop.getProducts(web3.toBigNumber(1), web3.toBigNumber(10));
+    //     assert.equal(list.join(), "4,5,6", 'getProducts #1 is invalid');
+    //
+    //     list = await shop.getProducts(web3.toBigNumber(10), web3.toBigNumber(100));
+    //     assert.equal(list.join(), "4,5,6", 'getProducts #2 is invalid');
+    //
+    //     let lastId = await shop.getLastProductId();
+    //
+    //     list = await shop.getProducts(web3.toBigNumber(1), web3.toBigNumber(lastId + 1));
+    //     assert.equal(list.join(), "4,5,6", 'getProducts #3 is invalid');
+    //
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await this.addShop();
+    //     await this.addShop();
+    //
+    //     await shop.deleteProduct(9, {from: owner});
+    //     await shop.deleteProduct(12, {from: owner});
+    //
+    //     list = await shop.getProducts(web3.toBigNumber(1), web3.toBigNumber(100));
+    //     assert.equal(list.join(), "4,5,6,7,8,10,11", 'getProducts #3 is invalid');
+    // });
+
+    it("should return next product", async () => {
+        await createTestSet();
+        let list
+        //"4,5,6,7,8,10,11"
+
+        list = await shop.getNext(0);
+        assert.equal(4, list[0].toString(), 'get next after 0');
+
+        list = await shop.getNext(4);
+        assert.equal(list[0].toString(), 5, 'get next after 4');
+
+        list = await shop.getNext(5);
+        assert.equal(list[0].toString(), 6, 'get next after 4');
+
+        list = await shop.getNext(6);
+        assert.equal(list[0].toString(), 7, 'get next after 4');
+
+        list = await shop.getNext(7);
+        assert.equal(list[0].toString(), 8, 'get next after 4');
+
+        list = await shop.getNext(8);
+        assert.equal(list[0].toString(), 10, 'get next after 4');
+
+        list = await shop.getNext(10);
+        assert.equal(11, list[0].toString(), 'get next after 10');
+
+        await exceptions.expectThrow(
+            shop.getNext(11),
+            exceptions.errTypes.revert,
+            "Product after id 11 doesn't exist"
+        );
+
+        await exceptions.expectThrow(
+            shop.getNext(100),
+            exceptions.errTypes.revert,
+            "Product after id 100 doesn't exist"
+        );
+    });
     //
     // it("should return prev product", async () => {
     //     await createTestSet();
@@ -303,5 +327,21 @@ contract('Shop', function(accounts) {
                 quantity: count,
             }
         );
+    });
+
+    it("should do withdraw", async () => {
+        let balance_before = web3.fromWei(web3.eth.getBalance(owner)).toString();
+
+        await exceptions.expectThrow(
+            shop.withdraw(web3.toWei(0.2, 'ether'), {from: owner}),
+            exceptions.errTypes.revert,
+            "Should revert to liitle money in contract"
+        );
+        shop.withdraw(web3.toWei(0.05, 'ether'), {from: owner})
+
+        let balance_after = web3.fromWei(web3.eth.getBalance(owner)).toString();
+
+        assert(balance_before + 0.05, balance_after, "Owner didn't get money");
+
     });
 });

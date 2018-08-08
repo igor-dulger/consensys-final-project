@@ -1,10 +1,10 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
-import './openzeppelin/math/SafeMath.sol';
+import "./openzeppelin/math/SafeMath.sol";
 
 /**
  * @title SafeMath
- * @author Igor Dulger 
+ * @author Igor Dulger
  * @dev Math operations with safety checks that throw on error
  */
 library ProductLib {
@@ -42,7 +42,7 @@ library ProductLib {
     */
 
     modifier inStorage(ProductStorage storage self, uint64 _id) {
-        require(self.entities[_id].id == _id);
+        require(_id != 0 && self.entities[_id].id == _id);
         _;
     }
 
@@ -82,6 +82,7 @@ library ProductLib {
         internal
         returns (uint64)
     {
+        require(_price > 0);
         self.productMaxId = uint64(self.productMaxId.add(1));
         self.productCount = uint64(self.productCount.add(1));
 

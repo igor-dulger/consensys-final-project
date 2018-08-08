@@ -1,7 +1,7 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
-import './openzeppelin/ownership/Ownable.sol';
-import './openzeppelin/math/SafeMath.sol';
+import "./openzeppelin/ownership/Ownable.sol";
+import "./openzeppelin/math/SafeMath.sol";
 import "./openzeppelin/ownership/rbac/RBAC.sol";
 
 /**
@@ -12,8 +12,8 @@ import "./openzeppelin/ownership/rbac/RBAC.sol";
  * A superuser can transfer his role to a new address.
  */
 contract MarketplaceRoles is Ownable, RBAC {
-    string public constant ROLE_ADMIN = "admin";
-    string public constant ROLE_SELLER = "seller";
+    string internal constant ROLE_ADMIN = "admin";
+    string internal constant ROLE_SELLER = "seller";
 
     /**
     * @dev Throws if called by any account that's not a admin.

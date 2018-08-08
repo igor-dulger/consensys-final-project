@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./openzeppelin/ownership/Ownable.sol";
 import "./openzeppelin/math/SafeMath.sol";
@@ -12,12 +12,12 @@ import "./Shop.sol";
  * @author Igor Dulger
  * @dev Factory of shops with roles management.
  */
-contract Marketplace is Ownable, MarketplaceRoles, Paginable {
+contract Marketplace is Ownable, MarketplaceRoles {
     using SafeMath for uint;
     using ShopLib for ShopLib.ShopStorage;
     using EntityLib for EntityLib.EntityStorage;
 
-    bytes32 public constant SHOPS_LIST = "shops";
+    bytes32 internal constant SHOPS_LIST = "shops";
 
     ShopLib.ShopStorage internal shops;
     EntityLib.EntityStorage internal entities;
@@ -128,11 +128,40 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
         public
 
         view
-        returns (uint64, string, string, address, address)
+        returns(uint64 id, string name, string description, address shop, address owner)
     {
         return shops.get(_id);
     }
 
+    /**
+    * @dev next shop product
+    * @param _id product id
+    * @return (uint64 id, string name, string description, address shop, address owner)
+    * //revert
+    */
+
+    function getNext(uint64 _id)
+        public
+        view
+        returns(uint64 id, string name, string description, address shop, address owner)
+    {
+        return shops.get(entities.getNextId(SHOPS_LIST, _id));
+    }
+
+    /**
+    * @dev next shop product
+    * @param _id product id
+    * @return (uint64 id, string name, string description, address shop, address owner)
+    * //revert
+    */
+
+    function getSellersNext(address _seller, uint64 _id)
+        public
+        view
+        returns(uint64 id, string name, string description, address shop, address owner)
+    {
+        return shops.get(entities.getNextId(getShopListName(_seller), _id));
+    }
     /**
     * @dev Get list of shop ids. If _from doesn't exist function will start
     * from a first existing shop
@@ -140,7 +169,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     * @param _count How many shops to return.
     * @return uint64[]
     */
-    function getShops(uint64 _from, uint16 _count)
+    /* function getShops(uint64 _from, uint16 _count)
         public
 
         view
@@ -150,7 +179,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
             _count = pageSize;
         }
         return entities.getList(SHOPS_LIST, _from, _count);
-    }
+    } */
 
     /**
     * @dev Get list of shop ids owned by a seller. If _from doesn't exist function will start
@@ -160,7 +189,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     * @param _count How many shops to return.
     * @return uint64[]
     */
-    function getSellerShops(address _seller, uint64 _from, uint16 _count)
+    /* function getSellerShops(address _seller, uint64 _from, uint16 _count)
         public
 
         view
@@ -170,7 +199,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
             _count = pageSize;
         }
         return entities.getList(getShopListName(_seller), _from, _count);
-    }
+    } */
 
     /**
     * @dev Generate key for mapping which stores shop ids by sellers
@@ -179,7 +208,7 @@ contract Marketplace is Ownable, MarketplaceRoles, Paginable {
     */
     function getShopListName(address _addr)
         private
-        pure
+        view
         returns(bytes32)
     {
         return keccak256(abi.encodePacked(SHOPS_LIST, _addr));

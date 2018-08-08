@@ -113,6 +113,11 @@ contract TestShopLib is ThrowHandler{
         Assert.equal(expected, actual, "Count of shops should be got");
     }
 
+    function removeNotExisting() public {
+        uint64 id = 1000;
+        shops.remove(id);
+    }
+
     function testRemove() public {
         // Arrange
         uint64 id = 1;
@@ -121,6 +126,7 @@ contract TestShopLib is ThrowHandler{
         bool actual = shops.remove(id);
 
         // Assert
+        Assert.isFalse(execute('removeNotExisting()'), "expected revert, id doesn't exists");
         Assert.equal(true, actual, "Remove has to return true");
         Assert.equal(shops.count, uint(1), "Count should be set");
         Assert.equal(shops.maxId, uint(2), "Max id shouldn't be changed");

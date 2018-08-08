@@ -1,26 +1,61 @@
 import React, { Component } from 'react'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
 import getWeb3 from './utils/getWeb3'
 import getAccounts from './utils/getAccounts'
 import dataProvider from './services/DataProvider'
 import marketplaceService from './services/Marketplace'
 
+import Shops from './components/Shops'
+import AdminManagement from './components/AdminManagement'
+import SellerManagement from './components/SellerManagement'
+import SellerShops from './components/SellerShops'
+import CreateShop from './components/CreateShop'
+
+import { withAlert } from 'react-alert'
+
 import './css/oswald.css'
 import './css/open-sans.css'
 import './css/pure-min.css'
-import './App.css'
+import './css/components/App.css'
 
 class App extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            setPageSize: 0,
+            ready: false,
             roles: {
                 owner: false,
                 admin: false,
                 seller: false
-            }
+            },
+            account: null
         }
+        this.watchAccountChangeDescriptor = null
+    }
+
+    watchAccountChange() {
+        var accountInterval = setInterval(() => {
+          if (dataProvider.web3.eth.accounts[0] !== dataProvider.account) {
+              dataProvider.set({
+                  account: dataProvider.web3.eth.accounts[0]
+              })
+            this.getRoles()
+            this.setState({
+                account: dataProvider.account
+            })
+          }
+        }, 100);
+        return accountInterval
+    }
+
+    getRoles() {
+        marketplaceService.getRoles().then((roles) => {
+            return this.setState({
+                roles: roles
+            });
+        })
     }
 
     componentWillMount() {
@@ -35,62 +70,84 @@ class App extends Component {
         })
     }
 
-    async instantiateContract() {
-        const accounts = await getAccounts()
-        dataProvider.set({
-            account: accounts[0],
-            marketplace: await marketplaceService.getContract()
-        })
-
-        return this.setState({
-            roles: await marketplaceService.getRoles()
-        });
-    }
-
-    async handleClick(event) {
-        const contract = dataProvider.marketplace
-        const account = dataProvider.account
-
-        // await contract.setPageSize(5, {from: account})
-        // let result = await contract.getPageSize()
-        // return this.setState({ pageSizeValue: result.toString() })
-
-        contract.setPageSize(5, {from: account}).then(result => {
-            console.log(result)
-            return contract.getPageSize()
-        }).then(result => {
-            return this.setState({ pageSizeValue: result.toString() })
+    instantiateContract() {
+        console.log("Get marketplace contract")
+        getAccounts().then((accounts) => {
+            marketplaceService.getContract().then((contract) => {
+                console.log(accounts[0], contract)
+                dataProvider.set({
+                    account: accounts[0],
+                    marketplace: contract
+                })
+                this.getRoles()
+                this.watchAccountChangeDescriptor = this.watchAccountChange()
+                this.setState({
+                    ready: true,
+                    account: dataProvider.account
+                })
+            })
         })
     }
 
     render() {
-        let owner = (this.state.roles.owner) ? "Owner" : ''
-        let admin = (this.state.roles.admin) ? "Admin" : ''
-        let seller = (this.state.roles.seller) ? "Seller" : ''
-
-      console.log(this.state, dataProvider, owner, admin, seller)
+        console.log("App render", this.props, this.state)
         return (
-          <div className="App">
-            <nav className="navbar pure-menu pure-menu-horizontal">
-                <a href="#" className="pure-menu-heading pure-menu-link">Truffle Box</a>
-            </nav>
-            <main className="container">
-              <div className="pure-g">
-                <div className="pure-u-1-1">
-                  <h1>Good to Go!</h1>
-                  You are: {owner} {admin} {seller}
-                  <p>Your Truffle Box is installed and ready.</p>
-                  <h2>Smart Contract Example</h2>
-                  <p>If your contracts compiled and migrated successfully, below will show a stored value of 17 (by default).</p>
-                  <p>Try changing the value stored on <strong>line 59</strong> of App.js.</p>
-                  <p>The stored value is: {this.state.pageSizeValue}</p>
-                  <button onClick={this.handleClick.bind(this)}>Set Page Button</button>
-                </div>
-              </div>
-            </main>
-          </div>
+            <div className="App">
+                <nav className="navbar pure-menu pure-menu-horizontal">
+                    <a href="/" className="pure-menu-heading pure-menu-link">Home</a>
+                    {this.state.roles.owner &&
+                        <a href="/admins" className="pure-menu-heading pure-menu-link">Admin management</a>
+                    }
+                    {(this.state.roles.owner || this.state.roles.admin) &&
+                        <a href="sellers" className="pure-menu-heading pure-menu-link">Seller management</a>
+                    }
+                    {this.state.roles.seller &&
+                        <a href="/shops" className="pure-menu-heading pure-menu-link">Shops management</a>
+                    }
+                </nav>
+                <main className="container">
+                    <div className="pure-g">
+                        <div className="pure-u-1-5"></div>
+                        <div className="pure-u-3-5">
+                            {!this.state.ready ?
+                                (
+                                    <h2></h2>
+                                )
+                            : (
+                                <Router>
+                                    <Switch>
+                                        <Route exact path='/' render={(props) => (
+                                            <Shops roles={this.state.roles}/>
+                                        )}/>
+                                        {this.state.roles.owner &&
+                                            <Route exact path='/admins' render={(props) => (
+                                                <AdminManagement {...props} roles={this.state.roles}/>
+                                            )}/>
+                                        }
+                                        {(this.state.roles.owner || this.state.roles.admin) &&
+                                            <Route path="/sellers" component={SellerManagement}/>
+                                        }
+                                        {this.state.roles.seller &&
+                                            <Route path="/shops/add" component={CreateShop}/>
+                                        }
+                                        {this.state.roles.seller &&
+                                            <Route path="/shops" render={(props) => (
+                                                <SellerShops {...props} account={this.state.account} />
+                                            )}/>
+                                        }
+                                        <Route render={(props) => (
+                                            <Shops roles={this.state.roles}/>
+                                        )}/>
+                                    </Switch>
+                                </Router>
+                            )}
+                        </div>
+                        <div className="pure-u-1-5"></div>
+                    </div>
+                </main>
+            </div>
         );
     }
 }
 
-export default App
+export default withAlert(App)

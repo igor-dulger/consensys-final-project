@@ -64,10 +64,12 @@ contract TestEntityList is ThrowHandler {
 
     function testGetNextId() public {
         Assert.equal(uint(entities.getNextId("Test", 2)), uint(3), "next for 2 is 1");
+        Assert.equal(uint(entities.getNextId("Test", 8)), uint(0), "next for 8 is 0");
     }
 
     function testGetPrevId() public {
         Assert.equal(uint(entities.getPrevId("Test", 2)), uint(1), "prev for 2 is 1");
+        Assert.equal(uint(entities.getPrevId("Test", 1)), uint(0), "prev for 1 is 0");
     }
 
     function testDeleteEntity() public {
@@ -97,7 +99,7 @@ contract TestEntityList is ThrowHandler {
         Assert.equal(uint(entities.getPrevId("Test", 5)), uint(3), "after #3 delete 5 prev id should be 3");
     }
 
-    function testGetList() public {
+    /* function testGetList() public {
         uint64[] memory ids = entities.getList("Test", 1, 20);
         uint64[] memory expected = new uint64[](5);
         expected[0] = 2;
@@ -119,5 +121,5 @@ contract TestEntityList is ThrowHandler {
         Assert.equal(uint(ids[0]), uint(expected[0]), "id 0 must match");
         Assert.equal(uint(ids[1]), uint(expected[1]), "id 1 must match");
         Assert.equal(uint(ids[2]), uint(expected[2]), "id 2 must match");
-    }
+    } */
 }

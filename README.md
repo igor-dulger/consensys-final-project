@@ -89,38 +89,5 @@ Use mnemonics you saved before
 
 ## More information
 
-[Avoiding common attacks](https://github.com/igor-dulger/consensys-final-project/blob/master/avoiding_common_attacks.md)
-[Design pattern desicions](https://github.com/igor-dulger/consensys-final-project/blob/master/design_pattern_desicions.md)
-
-Available Accounts
-==================
-(0) 0x7b0a8f5a633d66c4f6ba85272cfcb599e480b2f1
-(1) 0xaee70339ea42e820e0cc121d1210432ee82e972a
-(2) 0xfcbec15dd04155b7a880254410cdccd920f55d70
-(3) 0xcf56b9ee6e488a95c9f35fc8c81a47e367b79d87
-(4) 0x8f196dde3e3b6af5689b07b59adeab44598cfb59
-(5) 0xa77927c5683c7350a2103cc8a0d57351d0683ea3
-(6) 0x1d3b66dc6c51f0107a9583c525126ee31d1bcf7a
-(7) 0x3492b6383dd1562085031675c556ec0148730ea8
-(8) 0xfff81cf571523eac4e1899710f46b7f041d1fcd3
-(9) 0xfe163eb753b2702b650fde21f6feb53db5669e14
-
-
-Private Keys
-==================
-(0) 18b908b91ea364928aac296aa3b7e6120ea6d2c117e415acae9dd0e205ce3ade
-(1) 0227e70b93ffbcb12c41d2d528a7b3dce655138a0c3600cc18312e5236219f82
-(2) c682b0f065b96c4a10b584d2002ae6f0d2e7d3fbf4af60cba4666791f4be5502
-(3) 37b47eec11a4e1c05b9cdad120127143369a2eb8bc97e6a4786559f42f21d9fc
-(4) 3da67b5fb67943411759974c8178cbfa9d000c06ad4ccbcc43e2ae3d2d752f22
-(5) 9bd9e008884e78f57a6b5dc744fb1aac6912483ddc8ce14486223a5da902bcb5
-(6) fb462120da7c893c09955b054e8a67ad58560d2388fc17c506ad570e52f9d32b
-(7) 54e9657bd18d4428b1d80f230b21aa0eb14770672cc2e850516ae470d33ee9d2
-(8) c47c82f78ee529af8720bddf08007309897cb7695006f033235a0a2b3751930e
-(9) 89bef1dbbbb840ef73bb5ec517e5a75c466cc905272c5cb445726507a75b41f5
-
-HD Wallet
-==================
-Mnemonic:      make toilet coffee child enough artwork write sauce polar sport problem junior
-
-0x52243a30acc53ee33e3ec4879506efd1a06ef708
++ [Avoiding common attacks](https://github.com/igor-dulger/consensys-final-project/blob/master/avoiding_common_attacks.md)
++ [Design pattern desicions](https://github.com/igor-dulger/consensys-final-project/blob/master/design_pattern_desicions.md)

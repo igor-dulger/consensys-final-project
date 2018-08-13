@@ -5,11 +5,13 @@ Below you  will find a list of possible attack:
 ## Reentrancy:
 Shop.withdraw function changes state before transfer, also withdraw uses
 transfer instead of call
+
 Shop.returnExtra uses transfer instead of call
 
 ## Cross-function Race Conditions
 Shop.withdraw function changes state before transfer, also withdraw uses
 transfer instead of call
+
 Shop.returnExtra uses transfer instead of call
 
 ## Transaction-Ordering Dependence (TOD) / Front Running

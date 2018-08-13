@@ -52,11 +52,14 @@ $ npm install
  ```
  $ ganache-cli
  ```
+
  copy mnemonic string and save it, you will see something like this  
+
+ ```
   HD Wallet
  ==================
  Mnemonic:      make toilet coffee child enough artwork write sauce polar sport problem junior
-
+ ```
  Return to the terminal where you installed the project
 
 ### Compile solidity contracts

@@ -11,6 +11,7 @@ import AdminManagement from './components/AdminManagement'
 import SellerManagement from './components/SellerManagement'
 import SellerShops from './components/SellerShops'
 import CreateShop from './components/CreateShop'
+import ShopRouter from './components/ShopRouter'
 
 import { withAlert } from 'react-alert'
 
@@ -37,15 +38,9 @@ class App extends Component {
 
     watchAccountChange() {
         var accountInterval = setInterval(() => {
-          if (dataProvider.web3.eth.accounts[0] !== dataProvider.account) {
-              dataProvider.set({
-                  account: dataProvider.web3.eth.accounts[0]
-              })
-            this.getRoles()
-            this.setState({
-                account: dataProvider.account
-            })
-          }
+            if (dataProvider.web3.eth.accounts[0] !== dataProvider.account) {
+                location.reload()
+            }
         }, 100);
         return accountInterval
     }
@@ -91,6 +86,13 @@ class App extends Component {
 
     render() {
         console.log("App render", this.props, this.state)
+        const NoMatch = ({ location }) => (
+          <div>
+              <h1>
+                  Page not found 404
+              </h1>
+          </div>
+        )
         return (
             <div className="App">
                 <nav className="navbar pure-menu pure-menu-horizontal">
@@ -135,9 +137,10 @@ class App extends Component {
                                                 <SellerShops {...props} account={this.state.account} />
                                             )}/>
                                         }
-                                        <Route render={(props) => (
-                                            <Shops roles={this.state.roles}/>
+                                        <Route path="/shop/:address" render={(props) => (
+                                            <ShopRouter {...props} />
                                         )}/>
+                                        <Route component={NoMatch}/>
                                     </Switch>
                                 </Router>
                             )}

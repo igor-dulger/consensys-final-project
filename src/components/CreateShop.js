@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import marketplaceService from '../services/Marketplace'
 import { withAlert } from 'react-alert'
+import dataProvider from '../services/DataProvider'
 
 class createShop extends Component {
     constructor(props) {
@@ -15,6 +16,26 @@ class createShop extends Component {
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
 
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    componentWillMount() {
+        this.addWatchers()
+    }
+
+    addWatchers() {
+        marketplaceService.getWatcherShopAdded().watch ( (err, result) => {
+            console.log("Watcher add shop", result)
+            if (
+                result.args.name === this.state.name &&
+                result.args.actor === dataProvider.account
+            ) {
+                this.setState({
+                    name: '',
+                    description: ''
+                })
+                this.props.alert.success("Shop was created")
+            }
+        })
     }
 
     handleNameChange(event) {
@@ -32,12 +53,7 @@ class createShop extends Component {
             this.state.description
         ).then((result)=>{
             console.log(result)
-            this.setState({
-                name: '',
-                description: ''
-            })
-            this.props.alert.success("Shop was created")
-
+            this.props.alert.info("Waiting for confirmation")
         }).catch((error) => {
             console.log(error)
             this.props.alert.error("Error can't create shop")

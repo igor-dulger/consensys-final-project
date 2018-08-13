@@ -4,6 +4,7 @@ class DataProvider {
         this.marketplace = null
         this.shop = null
         this.account = null
+        this.ipfsUrl = "https://ipfs.io/ipfs/"
     }
 
     init(web3, account, marketplace, shop) {

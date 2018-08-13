@@ -2,6 +2,7 @@ pragma solidity 0.4.24;
 
 import "./openzeppelin/ownership/Ownable.sol";
 import "./openzeppelin/lifecycle/Pausable.sol";
+import "./openzeppelin/lifecycle/Destructible.sol";
 import "./ProductLib.sol";
 import "./EntityLib.sol";
 //import "./Paginable.sol";
@@ -12,7 +13,7 @@ import "./EntityLib.sol";
  * @author Igor Dulger
  * @dev Stores products and provides functions for products managibg and selling.
  */
-contract Shop is Ownable, Pausable {
+contract Shop is Ownable, Pausable, Destructible {
     using SafeMath for uint;
     using ProductLib for ProductLib.ProductStorage;
     using EntityLib for EntityLib.EntityStorage;
@@ -213,7 +214,7 @@ contract Shop is Ownable, Pausable {
     */
 
     function withdraw(uint value) external onlyOwner   returns (bool) {
-        require(value < address(this).balance);
+        require(value <= address(this).balance);
         address(owner).transfer(value);
         return true;
     }
@@ -296,17 +297,5 @@ contract Shop is Ownable, Pausable {
         uint64 indexed id,
         uint32 quantity,
         uint total
-    );
-
-    /**
-    * @dev Event for page size editing.
-    * @param actor Who changed page size (Indexed).
-    * @param to New size (Indexed).
-    * @param from Old size (Indexed).
-    */
-    event PageSizeChanged(
-        address indexed actor,
-        uint16 indexed to,
-        uint16 indexed from
     );
 }

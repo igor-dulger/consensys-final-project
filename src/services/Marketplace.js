@@ -41,7 +41,9 @@ class Marketplace {
 
     removeAdmin(address) {
         const account = dataProvider.account
-        return dataProvider.marketplace.removeAdmin(address, {from: account})
+        return dataProvider.marketplace.removeAdmin.estimateGas(address, {from: account}).then((gas) => {
+            return dataProvider.marketplace.removeAdmin(address, {from: account, gas: gas + 30000})
+        })
     }
 
     isAdmin(address) {
@@ -56,7 +58,9 @@ class Marketplace {
 
     removeSeller(address) {
         const account = dataProvider.account
-        return dataProvider.marketplace.removeSeller(address, {from: account})
+        return dataProvider.marketplace.removeSeller.estimateGas(address, {from: account}).then((gas) => {
+            return dataProvider.marketplace.removeSeller(address, {from: account, gas: gas + 30000})
+        })
     }
 
     isSeller(address) {
@@ -71,7 +75,9 @@ class Marketplace {
 
     deleteShop(id) {
         const account = dataProvider.account
-        return dataProvider.marketplace.deleteShop(id, {from: account})
+        return dataProvider.marketplace.deleteShop.estimateGas(id, {from: account}).then((gas) => {
+            return dataProvider.marketplace.deleteShop(id, {from: account, gas: gas + 100000})
+        })
     }
 
     getShop(id) {
@@ -88,6 +94,52 @@ class Marketplace {
         const account = dataProvider.account
         return dataProvider.marketplace.getSellersNext(account, id, {from: account})
     }
+
+    getWatcherAddRole(role) {
+        return dataProvider.marketplace.RoleAdded(
+            {
+                role: role
+            }
+        )
+    }
+
+    getWatcherRemoveRole(role) {
+        return dataProvider.marketplace.RoleRemoved(
+            {
+                role: role
+            }
+        )
+    }
+
+    getWatcherShopAdded() {
+        // return new Promise((resolve, reject) => {
+        //     dataProvider.web3.eth.getBlockNumber(function(e, r){
+        //         let event = dataProvider.marketplace.ShopAdded(
+        //             {},
+        //             {fromBlock: r, toBlock: 'latest'}
+        //         )
+        //         console.log("Add watcher fromBlock: " + r)
+        //         resolve(event)
+        //     })
+        // })
+
+        return dataProvider.marketplace.ShopAdded({})
+    }
+
+    getWatcherShopDeleted() {
+        // return new Promise((resolve, reject) => {
+        //     dataProvider.web3.eth.getBlockNumber(function(e, r){
+        //         let event = dataProvider.marketplace.ShopDeleted(
+        //             {},
+        //             {fromBlock: r, toBlock: 'latest'}
+        //         )
+        //         console.log("Add watcher fromBlock: " + r)
+        //         resolve(event)
+        //     })
+        // })
+        return dataProvider.marketplace.ShopDeleted({})
+    }
+
 }
 
 export default new Marketplace()

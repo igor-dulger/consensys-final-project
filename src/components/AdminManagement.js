@@ -21,6 +21,31 @@ class AdminManagement extends Component {
         this.handleRemoveSubmit = this.handleRemoveSubmit.bind(this);
     }
 
+    componentWillMount() {
+        this.addWatchers()
+    }
+
+    addWatchers() {
+        marketplaceService.getWatcherAddRole('admin').watch ( (err, result) => {
+            console.log("Watcher add admin", result)
+            if (result.args.operator === this.state.add) {
+                this.setState({
+                    add: ''
+                })
+                this.props.alert.success("Admin was added")
+            }
+        })
+        marketplaceService.getWatcherRemoveRole('admin').watch ( (err, result) => {
+            console.log("Watcher remove admin", result)
+            if (result.args.operator === this.state.remove) {
+                this.setState({
+                    remove: ''
+                })
+                this.props.alert.success("Admin was deleted")
+            }
+        })
+    }
+
     handleCheckChange(event) {
         this.setState({check: event.target.value});
     }
@@ -44,10 +69,8 @@ class AdminManagement extends Component {
         event.preventDefault();
         marketplaceService.addAdmin(this.state.add).then((result)=>{
             console.log(result)
-            this.setState({
-                add: ''
-            })
-            this.props.alert.success("Admin was added")
+            this.props.alert.info("Wait for confirmation")
+
         }).catch((error) => {
             console.log(error)
             this.props.alert.error("Error can't add admin")
@@ -62,10 +85,8 @@ class AdminManagement extends Component {
         event.preventDefault();
         marketplaceService.removeAdmin(this.state.remove).then((result)=>{
             console.log(result)
-            this.setState({
-                remove: ''
-            })
-            this.props.alert.success("Admin was deleted")
+            this.props.alert.info("Wait for confirmation")
+
         }).catch((error) => {
             console.log(error)
             this.props.alert.error("Error can't delete admin")

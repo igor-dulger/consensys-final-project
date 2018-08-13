@@ -11,7 +11,7 @@ class ShopRow extends Component {
     render() {
         var link = "/shop/" + this.props.address
         return (
-            <tr className={this.props.index % 2 == 1 ? "pure-table-odd" : ""} >
+            <tr className={this.props.index % 2 === 1 ? "pure-table-odd" : ""} >
                 <td>{this.props.id}</td>
                 <td><a href={link}>{this.props.name}</a></td>
                 <td>{this.props.description}</td>

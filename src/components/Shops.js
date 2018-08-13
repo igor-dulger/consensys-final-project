@@ -11,7 +11,8 @@ class Shops extends Component {
             roles: props.roles,
             pageSize: 10,
             stopPaging: false,
-            list: []
+            list: [],
+            readInProgress: false
         }
 
         this.handleShowMoreClick = this.handleShowMoreClick.bind(this);
@@ -19,6 +20,16 @@ class Shops extends Component {
 
     componentWillMount() {
         this.readState()
+        this.addWatchers()
+    }
+
+    addWatchers() {
+        marketplaceService.getWatcherShopDeleted().watch( (err, result) => {
+            this.readState()
+        })
+        marketplaceService.getWatcherShopAdded().watch( (err, result) => {
+            this.readState()
+        })
     }
 
     handleShowMoreClick() {
@@ -28,14 +39,23 @@ class Shops extends Component {
     }
 
     readState() {
+        if (this.state.readInProgress) return
+
         this.setState({
-            list: []
+            list: [],
+            readInProgress: true
         })
         this.getNext(0, 0);
     }
 
     getNext(id, showed) {
-        if (showed >= this.state.pageSize) return;
+        if (showed >= this.state.pageSize) {
+            this.setState({
+                readInProgress: false
+            })
+            return
+        }
+
         marketplaceService.getNext(id).then(result => {
             //console.log(result)
             const row = {
@@ -54,6 +74,9 @@ class Shops extends Component {
             })
         }).catch((error) => {
             this.setState({stopPaging: true})
+            this.setState({
+                readInProgress: false
+            })
             console.log("Can't get shop. Stop paging")
         })
     }

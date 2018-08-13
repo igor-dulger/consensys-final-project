@@ -21,6 +21,31 @@ class SellerManagement extends Component {
         this.handleRemoveSubmit = this.handleRemoveSubmit.bind(this);
     }
 
+    componentWillMount() {
+        this.addWatchers()
+    }
+
+    addWatchers() {
+        marketplaceService.getWatcherAddRole('seller').watch ( (err, result) => {
+            console.log("Watcher add seller", result)
+            if (result.args.operator === this.state.add) {
+                this.setState({
+                    add: ''
+                })
+                this.props.alert.success("Seller was added")
+            }
+        })
+        marketplaceService.getWatcherRemoveRole('seller').watch ( (err, result) => {
+            console.log("Watcher remove seller", result)
+            if (result.args.operator === this.state.remove) {
+                this.setState({
+                    remove: ''
+                })
+                this.props.alert.success("Seller was deleted")
+            }
+        })
+    }
+
     handleCheckChange(event) {
         this.setState({check: event.target.value});
     }
@@ -44,10 +69,7 @@ class SellerManagement extends Component {
         event.preventDefault();
         marketplaceService.addSeller(this.state.add).then((result)=>{
             console.log(result)
-            this.props.alert.success("Seller was added")
-            this.setState({
-                add: '',
-            })
+            this.props.alert.info("Wait for confirmation")
         }).catch((error) => {
             console.log(error)
             this.props.alert.error("Error can't add seller")
@@ -62,10 +84,7 @@ class SellerManagement extends Component {
         event.preventDefault();
         marketplaceService.removeSeller(this.state.remove).then((result)=>{
             console.log(result)
-            this.props.alert.success("Seller was deleted")
-            this.setState({
-                remove: ''
-            })
+            this.props.alert.info("Wait for confirmation")
         }).catch((error) => {
             console.log(error)
             this.props.alert.error("Error can't delete seller")

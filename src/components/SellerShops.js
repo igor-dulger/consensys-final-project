@@ -9,7 +9,10 @@ class SellerShops extends Component {
 
         this.state = {
             list: [],
-            account: this.props.account
+            account: this.props.account,
+            pageSize: 10,
+            readInProgress: false,
+            lastDeleted: 0
         }
 
         this.getDeleteClickHandler = this.getDeleteClickHandler.bind(this);
@@ -18,17 +21,37 @@ class SellerShops extends Component {
 
     componentWillMount() {
         this.readState()
+        this.addWatchers()
+    }
+
+    addWatchers() {
+        marketplaceService.getWatcherShopDeleted().watch ((err, result) => {
+            console.log("Watcher delete shop", result)
+            if (this.state.lastDeleted === result.args.id.toString()) {
+                this.props.alert.success("Shop was deleted")
+            }
+            this.readState()
+        })
     }
 
     readState(account) {
+        if (this.state.readInProgress) return
         this.setState({
             list: [],
+            readInProgress: true,
+            lastDeleted: 0,
             account: (account) ? account : this.state.account
         })
-        this.getNext(0);
+        this.getNext(0, 0);
     }
 
-    getNext(id) {
+    getNext(id, showed) {
+        if (showed >= this.state.pageSize) {
+            this.setState({
+                readInProgress: false
+            })
+            return
+        }
         marketplaceService.getSellersNext(id).then(result => {
             //console.log(result)
             const row = {
@@ -40,7 +63,7 @@ class SellerShops extends Component {
                 owner:  result[4],
                 onDeleteClick: this.getDeleteClickHandler(result[0].toString())
             }
-            this.getNext(row.id)
+            this.getNext(row.id, showed)
             let shops = this.state.list
             shops.push(row)
             this.setState({
@@ -48,6 +71,9 @@ class SellerShops extends Component {
             })
         }).catch((error) => {
             console.log("Can't get shop.")
+            this.setState({
+                readInProgress: false
+            })
         })
     }
 
@@ -57,19 +83,18 @@ class SellerShops extends Component {
 
     getDeleteClickHandler(id) {
         return (event) => {
-            this.props.alert.info('Deleting is in progress pls wait')
             marketplaceService.deleteShop(id).then(result => {
-                this.readState()
                 console.log(result)
+                this.props.alert.info('Deleting is in progress pls wait')
+                this.setState({lastDeleted: id})
             }).catch((error) => {
                 console.log("Error can't delete shop.", error)
             })
-            console.log("Click on delete", id, this)
         }
     }
 
     render() {
-        if (this.props.account != this.state.account) {
+        if (this.props.account !== this.state.account) {
             this.readState(this.props.account)
         }
 //        console.log("Render seller shops", this.props)
@@ -84,7 +109,6 @@ class SellerShops extends Component {
                             <th>#</th>
                             <th>Name</th>
                             <th>Description</th>
-                            <th>Manage</th>
                             <th>Action</th>
                         </tr>
                     </thead>

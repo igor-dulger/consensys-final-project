@@ -9,13 +9,12 @@ class SellerShopRow extends Component {
     }
 
     render() {
-        var link = "/shop/" + this.props.id
+        var link = "/shop/" + this.props.address
         return (
             <tr className="pure-table-odd">
                 <td>{this.props.id}</td>
-                <td>{this.props.name}</td>
+                <td><a href={link} className="">{this.props.name}</a></td>
                 <td>{this.props.description}</td>
-                <td><a href={link} className="">Manage</a></td>
                 <td><button className="button-error pure-button" onClick={this.props.onDeleteClick}>Delete</button></td>
             </tr>
         );

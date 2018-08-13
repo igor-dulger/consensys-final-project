@@ -39,15 +39,55 @@ The quantity of the item in the store’s inventory will be reduced by the appro
 
 ## Install
 
-truffle
-●  	Your project should be a truffle project
-○  	All of your contracts should be in a contracts directory
-■  	Truffle compile should successfully compile contracts
-○  	Migration contract and migration scripts should work
-■  	Truffle migrate should successfully migrate contracts to a locally running ganache-cli test blockchain on port 8545
-○  	All tests should be in a tests directory
-■  	Running truffle test should migrate contracts and run your tests
+```
+$  git clone git@github.com:igor-dulger/consensys-final-project.git MY_DIR
+```
 
+```
+$ cd MY_DIR
+$ npm install
+```
+ Start in another terminal
+
+ ```
+ $ ganache-cli
+ ```
+ copy mnemonic string and save it, you will see something like this  
+  HD Wallet
+ ==================
+ Mnemonic:      make toilet coffee child enough artwork write sauce polar sport problem junior
+
+ Return to the terminal where you installed the project
+
+### Compile solidity contracts
+```
+$ truffle compile
+```
+
+### Check that all tests a passed
+```
+$ truffle test
+```
+
+### Deploy contracts to local blockchain
+```
+$ truffle migrate
+```
+
+### Start web server localhost:3000
+```
+$ npm run start
+```
+
+### Metamask configuration
+Open metamask plugin in your browser. Logout from your current account. Click
+*Import using account seed phrase*
+Use mnemonics you saved before
+
+## More information
+
+[Avoiding common attacks](https://github.com/igor-dulger/consensys-final-project/blob/master/avoiding_common_attacks.md)
+[Design pattern desicions](https://github.com/igor-dulger/consensys-final-project/blob/master/design_pattern_desicions.md)
 
 Available Accounts
 ==================
@@ -81,7 +121,3 @@ HD Wallet
 Mnemonic:      make toilet coffee child enough artwork write sauce polar sport problem junior
 
 0x52243a30acc53ee33e3ec4879506efd1a06ef708
-
-
-
-Install

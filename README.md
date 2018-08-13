@@ -87,6 +87,13 @@ Open metamask plugin in your browser. Logout from your current account. Click
 *Import using account seed phrase*
 Use mnemonics you saved before
 
+### Testing tips
+For testing just give your Account1 (marketplace owner) a seller role. Then
+you will be able to see all marketplace functionality using just this account.
+For following tests give Account2 Admin role and Account3 Seller role, Account4
+will be your buyer. Use Metamask to switch between accounts and see the Dapp from
+different roles point of views   
+
 ## More information
 
 + [Avoiding common attacks](https://github.com/igor-dulger/consensys-final-project/blob/master/avoiding_common_attacks.md)

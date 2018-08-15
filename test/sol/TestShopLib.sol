@@ -91,7 +91,7 @@ contract TestShopLib is ThrowHandler{
         Assert.equal(shops.entities[eId].name, name, "Name should be valid");
     }
 
-    function testGetLastId() public {
+    /* function testGetLastId() public {
         // Arrange
         uint expected = 2;
 
@@ -100,7 +100,7 @@ contract TestShopLib is ThrowHandler{
 
         // Assert
         Assert.equal(expected, actual, "Last id should be got");
-    }
+    } */
 
     function testGetCount() public {
         // Arrange
@@ -126,10 +126,15 @@ contract TestShopLib is ThrowHandler{
         bool actual = shops.remove(id);
 
         // Assert
-        Assert.isFalse(execute('removeNotExisting()'), "expected revert, id doesn't exists");
         Assert.equal(true, actual, "Remove has to return true");
         Assert.equal(shops.count, uint(1), "Count should be set");
         Assert.equal(shops.maxId, uint(2), "Max id shouldn't be changed");
         Assert.equal(shops.entities[id].id, uint(0), "Id of deleted shop should be empty");
     }
+
+    function testRemoveNotExisting() public {
+        // Assert
+        Assert.isFalse(execute('removeNotExisting()'), "expected revert, id doesn't exists");
+    }
+
 }

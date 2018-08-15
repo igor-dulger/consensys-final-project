@@ -5,7 +5,8 @@ import "./openzeppelin/math/SafeMath.sol";
 import "./MarketplaceRoles.sol";
 import "./EntityLib.sol";
 import "./ShopLib.sol";
-import "./Shop.sol";
+import "./ShopFactoryLib.sol";
+/* import "./Shop.sol"; */
 
 /**
  * @title Marketplace
@@ -89,8 +90,9 @@ contract Marketplace is Ownable, MarketplaceRoles {
 
         returns(bool)
     {
-        Shop shop = new Shop(_name, _description);
-        shop.transferOwnership(address(msg.sender));
+        /* Shop shop = new Shop(_name, _description);
+        shop.transferOwnership(address(msg.sender)); */
+        address shop = ShopFactoryLib.create(_name, _description);
         uint64 id = shops.add(_name, _description, address(shop), msg.sender);
         entities.add(SHOPS_LIST, id);
         entities.add(getShopListName(msg.sender), id);
@@ -162,44 +164,6 @@ contract Marketplace is Ownable, MarketplaceRoles {
     {
         return shops.get(entities.getNextId(getShopListName(_seller), _id));
     }
-    /**
-    * @dev Get list of shop ids. If _from doesn't exist function will start
-    * from a first existing shop
-    * @param _from shop id to start with.
-    * @param _count How many shops to return.
-    * @return uint64[]
-    */
-    /* function getShops(uint64 _from, uint16 _count)
-        public
-
-        view
-        returns (uint64[])
-    {
-        if (_count > pageSize) {
-            _count = pageSize;
-        }
-        return entities.getList(SHOPS_LIST, _from, _count);
-    } */
-
-    /**
-    * @dev Get list of shop ids owned by a seller. If _from doesn't exist function will start
-    * from a first existing shop
-    * @param _seller seller address.
-    * @param _from shop id to start with.
-    * @param _count How many shops to return.
-    * @return uint64[]
-    */
-    /* function getSellerShops(address _seller, uint64 _from, uint16 _count)
-        public
-
-        view
-        returns (uint64[])
-    {
-        if (_count > pageSize) {
-            _count = pageSize;
-        }
-        return entities.getList(getShopListName(_seller), _from, _count);
-    } */
 
     /**
     * @dev Generate key for mapping which stores shop ids by sellers
@@ -208,7 +172,7 @@ contract Marketplace is Ownable, MarketplaceRoles {
     */
     function getShopListName(address _addr)
         private
-        view
+        pure
         returns(bytes32)
     {
         return keccak256(abi.encodePacked(SHOPS_LIST, _addr));

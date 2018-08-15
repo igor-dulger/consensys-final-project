@@ -20,7 +20,7 @@ contract('Marketplace', function(accounts) {
        });
     });
 
-    it("give an admin role, allowable only for an owner", async () => {
+    it("should give an admin role, allowable only for an owner", async () => {
         assert.isFalse(await contract.isAdmin(admin), "shouldn't have admin role yet");
         let tx = await contract.addAdmin(admin, {from: owner});
         assert.isTrue(await contract.isAdmin(admin), "shouldn have admin role");
@@ -40,7 +40,7 @@ contract('Marketplace', function(accounts) {
         );
     });
 
-    it("remove an admin role from an address, allowable only for an owner", async () => {
+    it("should remove an admin role from an address, allowable only for an owner", async () => {
         await contract.addAdmin(admin, {from: owner});
         assert.isTrue(await contract.isAdmin(admin), "shouldn have admin role");
         await contract.removeAdmin(admin, {from: owner});
@@ -63,7 +63,7 @@ contract('Marketplace', function(accounts) {
         );
     });
 
-    it("give a seller role, allowable for admin and owner", async () => {
+    it("should give a seller role, allowable for admin and owner", async () => {
         await contract.addAdmin(admin, {from: owner});
 
         assert.isFalse(await contract.isSeller(seller), "seller doesn't have seller role yet");
@@ -80,7 +80,7 @@ contract('Marketplace', function(accounts) {
         );
     });
 
-    it("remove an seller role from an address, allowable for admin and owner", async () => {
+    it("should remove an seller role from an address, allowable for admin and owner", async () => {
         await contract.addAdmin(admin, {from: owner});
 
         await contract.addSeller(seller, {from: admin});
@@ -103,7 +103,7 @@ contract('Marketplace', function(accounts) {
         );
     });
 
-    it("a new shop should be created", async () => {
+    it("should a new shop should be created", async () => {
         const name = "Shop name";
         const description = "Shop description";
 
@@ -157,7 +157,7 @@ contract('Marketplace', function(accounts) {
         assert.equal(description, shopDescription, 'incorrect descripton in shop contract');
     });
 
-    it("a shop should be deleted", async () => {
+    it("should a shop should be deleted", async () => {
 
         await contract.addAdmin(admin, {from: owner});
         await contract.addSeller(seller, {from: owner});
@@ -327,7 +327,7 @@ contract('Marketplace', function(accounts) {
     });
 
 
-    // it("should return next shop ids", async () => {
+    // it("should should return next shop ids", async () => {
     //     list = await contract.getSellerShops(seller, web3.toBigNumber(1), web3.toBigNumber(10));
     //     assert.equal(list.join(), [1,2,3], 'incorrect list for seller');
     //

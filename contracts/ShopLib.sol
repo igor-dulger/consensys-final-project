@@ -33,7 +33,7 @@ library ShopLib {
     */
 
     modifier inStorage(ShopStorage storage self, uint64 _id) {
-        require(_id != 0 && self.entities[_id].id == _id);        
+        require(_id != 0 && self.entities[_id].id == _id);
         _;
     }
 
@@ -94,20 +94,6 @@ library ShopLib {
             self.entities[_id].shopAddress,
             self.entities[_id].owner
         );
-    }
-
-    /**
-    * @dev Get product.
-    * @param self Reference to entity storage.
-    */
-    function getLastId(
-        ShopStorage storage self
-    )
-        internal
-        view
-        returns (uint64)
-    {
-        return self.maxId;
     }
 
     /**

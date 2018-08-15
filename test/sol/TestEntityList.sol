@@ -99,6 +99,15 @@ contract TestEntityList is ThrowHandler {
         Assert.equal(uint(entities.getPrevId("Test", 5)), uint(3), "after #3 delete 5 prev id should be 3");
     }
 
+    function testDeleteEntityWithNullId() public {
+        Assert.isFalse(execute('deleteZeroId'), "0 id can't be deleted");
+    }
+
+    function testDeleteUnexistingEntity() public {
+        Assert.isFalse(execute('deleteUnexistingId'), "unexisting id shouldn't be deleted");
+    }
+
+
     /* function testGetList() public {
         uint64[] memory ids = entities.getList("Test", 1, 20);
         uint64[] memory expected = new uint64[](5);

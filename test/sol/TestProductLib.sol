@@ -93,7 +93,7 @@ contract TestProductLib is ThrowHandler {
         Assert.equal(products.entities[id].image, image, "image should be valid");
     }
 
-    function testGetLastProductId() public {
+    /* function testGetLastProductId() public {
         // Arrange
         uint expected = 1;
 
@@ -102,7 +102,7 @@ contract TestProductLib is ThrowHandler {
 
         // Assert
         Assert.equal(expected, actual, "Last product id should be got");
-    }
+    } */
 
     function testGetProductCount() public {
         // Arrange

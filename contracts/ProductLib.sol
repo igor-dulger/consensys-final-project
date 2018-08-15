@@ -156,21 +156,6 @@ library ProductLib {
     }
 
     /**
-    * @dev Get last product id.
-    * @param self Reference to product storage.
-    * @return uint64
-    */
-    function getLastProductId(
-        ProductStorage storage self
-    )
-        internal
-        view
-        returns (uint64)
-    {
-        return self.productMaxId;
-    }
-
-    /**
     * @dev Get number of products in the storage.
     * @param self Reference to product the storage.
     * @return uint64

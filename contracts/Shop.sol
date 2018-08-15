@@ -152,44 +152,12 @@ contract Shop is Ownable, Pausable, Destructible {
     }
 
     /**
-    * @dev Get list of product ids. If _from doesn't exist function will start
-    * from a first existing product
-    * @param _from Product id to start with.
-    * @param _count How many products to return.
-    * @return uint64[]
-    */
-    /* function getProducts(uint64 _from, uint16 _count)
-        external
-        whenNotPaused
-        view
-        returns (uint64[])
-    {
-        uint16 count = 0;
-        if (_count > pageSize) {
-            count = pageSize;
-        } else {
-            count = _count;
-        }
-        return entities.getList(ENTITY_NAME, _from, count);
-    } */
-
-    /**
     * @dev Get number of products in the storage.
     * @return uint64
     */
     function getProductCount() external  view returns (uint64) {
         return products.getProductCount();
     }
-
-    /**
-    * @dev Get last product id.
-    * @return uint64
-    */
-    /* function getLastProductId() external  view returns (uint64)
-    {
-        return products.getLastProductId();
-    } */
-
 
     /**
     * @dev next existing product

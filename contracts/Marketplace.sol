@@ -19,9 +19,22 @@ contract Marketplace is Ownable, MarketplaceRoles {
     using EntityLib for EntityLib.EntityStorage;
 
     bytes32 internal constant SHOPS_LIST = "shops";
+    bool internal _initialized;
 
     ShopLib.ShopStorage internal shops;
     EntityLib.EntityStorage internal entities;
+
+    /**
+    * @dev Initialize OwnedUpgradeabilityProxy storage, MUST be called
+    * during deploy process
+    * @param _owner account address
+    * //revert
+    */
+    function initialize(address _owner) public {
+        require(!_initialized);
+        setOwner(_owner);
+        _initialized = true;
+    }
 
     /**
     * @dev Add admin role to an address.

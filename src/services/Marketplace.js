@@ -1,15 +1,34 @@
 import MarketplaceArtiffact from '../../build/contracts/Marketplace.json'
+import ENSArtiffact from '../../build/contracts/ENSRegistry.json'
 import dataProvider from '../services/DataProvider'
+import getNetworkType from '../utils/getNetworkType'
+import ENS from 'ethereum-ens'
 
 class Marketplace {
     // constructor() {
     // }
 
     async getContract() {
+
         const contract = require('truffle-contract')
+        var ens;
+        if ('Private' === getNetworkType()){
+            //ENS only for development network
+            let ens_contract = contract(ENSArtiffact)
+            ens_contract.setProvider(dataProvider.web3.currentProvider)
+            ens_contract = await ens_contract.deployed()
+            ens = new ENS(dataProvider.web3.currentProvider, ens_contract.address)
+        } else {
+            //Production or test ENS
+            ens = new ENS(dataProvider.web3.currentProvider)
+        }
+
+        var address = await ens.resolver('uglymarketplace.test').addr()
+        console.log("Marketplace addr from ENS", address)
+
         const Marketplace = contract(MarketplaceArtiffact)
         Marketplace.setProvider(dataProvider.web3.currentProvider)
-        return await Marketplace.deployed()
+        return new Marketplace(address)
     }
 
     async getRoles() {

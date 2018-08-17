@@ -69,7 +69,7 @@ class App extends Component {
         console.log("Get marketplace contract")
         getAccounts().then((accounts) => {
             marketplaceService.getContract().then((contract) => {
-                console.log(accounts[0], contract)
+                console.log("Account ", accounts[0], "marketplace ", contract)
                 dataProvider.set({
                     account: accounts[0],
                     marketplace: contract
@@ -84,15 +84,18 @@ class App extends Component {
         })
     }
 
+
     render() {
         console.log("App render", this.props, this.state)
-        const NoMatch = ({ location }) => (
-          <div>
-              <h1>
-                  Page not found 404
-              </h1>
-          </div>
-        )
+
+        // const NoMatch = ({ location }) => (
+        //   <div>
+        //       <h1>
+        //           QQQQQQQQQQQQQQQQQQQQQQQQqq Page not found 404 QQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+        //       </h1>
+        //   </div>
+        // )
+
         return (
             <div className="App">
                 <nav className="navbar pure-menu pure-menu-horizontal">
@@ -140,7 +143,6 @@ class App extends Component {
                                         <Route path="/shop/:address" render={(props) => (
                                             <ShopRouter {...props} />
                                         )}/>
-                                        <Route component={NoMatch}/>
                                     </Switch>
                                 </Router>
                             )}

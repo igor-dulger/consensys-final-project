@@ -16,137 +16,58 @@ class Shop {
         const Shop = contract(ShopArtiffact)
         Shop.setProvider(dataProvider.web3.currentProvider)
         return new Promise((resolve, reject) => {
-            let contract = dataProvider.web3.eth.contract(Shop.abi)
-            resolve(contract.at(address))
+            resolve(new Shop(address))
         })
-//        return Shop.at(address)
     }
 
     name() {
         const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.name(
-                {from: account},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        });
-//        return dataProvider.shop.name({from: account})
+        return dataProvider.shop.name({from: account})
     }
 
     description() {
         const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.description(
-                {from: account},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        });
-//        return dataProvider.shop.description({from: account})
+        return dataProvider.shop.description({from: account})
     }
 
     owner() {
         const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.owner(
-                {from: account},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        });
-//        return dataProvider.shop.owner({from: account})
+        return dataProvider.shop.owner({from: account})
     }
 
     buyProduct(id, quantity, price) {
         const account = dataProvider.account
         const value = quantity * dataProvider.web3.toWei(price)
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.buyProduct(
-                id,
-                quantity,
-                {from: account, value: value},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        });
+        return dataProvider.shop.buyProduct(id, quantity, {from: account, value: value})
     }
 
     addProduct(name, price, quantity, image) {
         const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.addProduct(
-                name,
-                price,
-                quantity,
-                image,
-                {from: account},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        });
-//        return dataProvider.shop.addProduct(name, price, quantity, image, {from: account})
+        return dataProvider.shop.addProduct(name, price, quantity, image, {from: account})
     }
 
     editProduct(id, name, price, quantity, image) {
         const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.editProduct(
-                id,
-                name,
-                price,
-                quantity,
-                image,
-                {from: account},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        });
-        // return dataProvider.shop.editProduct(
-        //     id, name, price, quantity, image, {from: account}
-        // )
-    }
-
-    estimateGasdeleteProduct(id) {
-        const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.deleteProduct.estimateGas(
-                id,
-                {from: account},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        })
+        return dataProvider.shop.editProduct(
+            id, name, price, quantity, image, {from: account}
+        )
     }
 
     deleteProduct(id) {
         const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            this.estimateGasdeleteProduct(id).then((gas) => {
-                dataProvider.shop.deleteProduct(
-                    id,
-                    {from: account, gas: gas+100000},
-                    (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-                )
-            })
+        return dataProvider.shop.deleteProduct.estimateGas(id, {from: account}).then((gas) => {
+            return dataProvider.shop.deleteProduct(id, {from: account, gas: gas + 100000})
         })
-//        return dataProvider.shop.deleteProduct(id, {from: account})
     }
 
     getProduct(id) {
         const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.getProduct(
-                id,
-                {from: account},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        });
-//        return dataProvider.shop.getProduct(id, {from: account})
+        return dataProvider.shop.getProduct(id, {from: account})
     }
 
     getNext(id) {
         const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.getNext(
-                id,
-                {from: account},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        })
+        return dataProvider.shop.getNext(id, {from: account})
     }
 
     getBalance() {
@@ -160,14 +81,7 @@ class Shop {
 
     withdraw(value) {
         const account = dataProvider.account
-        return new Promise((resolve, reject) => {
-            dataProvider.shop.withdraw(
-                value,
-                {from: account},
-                (e, r) => { if (e) { reject(e) } else { resolve(r) }}
-            )
-        })
-        //return dataProvider.shop.withdraw(value, {from: account})
+        return dataProvider.shop.withdraw(value, {from: account})
     }
 
     getWatcherProductAdded() {

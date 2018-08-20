@@ -73,8 +73,10 @@ A very convenient and useful tool (It isn't advertisement, but it took 10-20
 minutes to upload my code and got result)
 
 - When a buyer buys a product shop doesn't store this information in its storage,
-this info will be stored in logs and seller show gather it and store off chain. I 
+this info will be stored in logs and seller show gather it and store off chain. I
 selected this approach for simplicity.
+
+- Project deployed to Rinkedy network, address is in accounts.txt
 
 
 

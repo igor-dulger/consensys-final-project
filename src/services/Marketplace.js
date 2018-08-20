@@ -12,18 +12,22 @@ class Marketplace {
 
         const contract = require('truffle-contract')
         var ens;
+        var address;
         if ('Private' === getNetworkType()){
             //ENS only for development network
             let ens_contract = contract(ENSArtiffact)
             ens_contract.setProvider(dataProvider.web3.currentProvider)
             ens_contract = await ens_contract.deployed()
             ens = new ENS(dataProvider.web3.currentProvider, ens_contract.address)
+            address = await ens.resolver('uglymarketplace.test').addr()
+        } else if ('Rinkeby' === getNetworkType()) {
+            address = '0xfa193ba1ec883e97ffe97f0c875eab43b9b048e7'
         } else {
-            //Production or test ENS
+            //Production
             ens = new ENS(dataProvider.web3.currentProvider)
+            address = await ens.resolver('uglymarketplace.test').addr()
         }
 
-        var address = await ens.resolver('uglymarketplace.test').addr()
         console.log("Marketplace addr from ENS", address)
 
         const Marketplace = contract(MarketplaceArtiffact)

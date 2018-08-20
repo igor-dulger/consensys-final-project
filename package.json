@@ -64,7 +64,8 @@
     "react-dom": "^16.4.2",
     "react-loader-spinner": "^2.1.0",
     "react-router-dom": "^4.3.1",
-    "react-transition-group": "^2.3.0"
+    "react-transition-group": "^2.3.0",
+    "truffle-hdwallet-provider": "0.0.6"
   },
   "scripts": {
     "start": "node scripts/start.js",

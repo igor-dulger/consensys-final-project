@@ -11,6 +11,9 @@
  *     gasPrice: 10000000000,
  *   },
  */
+ var HDWalletProvider = require("truffle-hdwallet-provider");
+
+ var mnemonic = "make toilet coffee child enough artwork write sauce polar sport problem junior";
 
 module.exports = {
     networks: {
@@ -37,11 +40,22 @@ module.exports = {
         },
         network_id: '3',
       },
-      test: {
+      // rinkeby: {
+      //   host: "localhost", // Connect to geth on the specified
+      //   port: 8545,
+      //   from: "0x0085f8e72391Ce4BB5ce47541C846d059399fA6c", // default address to use for any transaction Truffle makes during migrations
+      //   network_id: 4,
+      //   gas: 4612388 // Gas limit used for deploys
+      // }
+      rinkeby: {
+        // host: "localhost", // Connect to geth on the specified
+        // port: 8545,
+        // from: "0x7b0a8f5a633d66c4f6ba85272cfcb599e480b2f1", // default address to use for any transaction Truffle makes during migrations
         provider: function() {
-          return new HDWalletProvider(mnemonic, "http://127.0.0.1:8545/");
+          return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io");
         },
-        network_id: '*',
+        network_id: 4,
+        gas: 4612388 // Gas limit used for deploys
       },
     }
   // See <http://truffleframework.com/docs/advanced/configuration>

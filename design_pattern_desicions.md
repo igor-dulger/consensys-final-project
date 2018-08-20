@@ -1,12 +1,15 @@
 # Design patterns
 
+## Fail early and fail loud
+I used require to reduce unnecessary code execution in the event that an exception will be thrown.
+
 ## Factory
 Marketplace uses Factory pattern to create shops instances, the logic behind was following, when a seller creates a shop he becomes an owner of this shop, so even if the marketplace stops, his shop will continue working. Such approach reflects a Web3 philosophy, also it allows to divide marketplace and shop logics and separate their storages.
 
 ## Circuit Breakers / Pausable
 If something goes wrong shop owner can temporary block some functionality of his shop, it can be used for upgrading app UI, transferring data to a new version of a shop, investigation, storage updating etc.
 
-## Destrucsible
+## Destrucsible / Mortal
 For a public block chain old unused application can be a big issue, so I believe that ANY contract should have self destruction method, which transfers money to an owner and clears a blockchains storage.
 
 ## Upgradeability

@@ -10,7 +10,7 @@ contract FIFSRegistrar {
     bytes32 rootNode;
 
     modifier only_owner(bytes32 subnode) {
-        address currentOwner = ens.owner(keccak256(rootNode, subnode));
+        address currentOwner = ens.owner(keccak256(abi.encodePacked(rootNode, subnode)));
         require(currentOwner == 0 || currentOwner == msg.sender);
         _;
     }

@@ -74,6 +74,7 @@ minutes to upload my code and got result)
 
 
 ## Dependencies
++ nodejs version 7.6 or higher
 +  [truffle](https://github.com/trufflesuite/truffle): Truffle framework
 +  [ganache-cli](https://github.com/trufflesuite/ganache-cli): a command-line
 version of Truffle's blockchain server.
@@ -84,6 +85,8 @@ version of Truffle's blockchain server.
 
 ```
 $  git clone git@github.com:igor-dulger/consensys-final-project.git MY_DIR
+OR
+$  git clone https://github.com/igor-dulger/consensys-final-project.git MY_DIR
 ```
 
 ```

@@ -41,6 +41,12 @@ project and my first React project, so the correct name for it should
 be **Ugly marketplace**. My UI is ugly like hell, ignore it.
 
 Some remarks about implementation:
+
+- Is it a good idea to implement a marketplace on block chain? No it is not, but as an example of different patterns implementation it is good.  
+
+- In the Dapp UI I didn't implement any **validation**, all validation is implemented
+in the contracts. In a real application it is MUST HAVE part but in this case I just saved my time to implement more important features and learn more. When you test the Dapp please always input correct data or you will get revert from the blockchain.
+
 - In this project I wrote contracts and libraries, most libraries are internal
 but factory is external. External factory allowed me to remove shop code from
 marketplace, and to decrease gas cost.

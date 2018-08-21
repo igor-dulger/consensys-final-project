@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 
 import getWeb3 from './utils/getWeb3'
 import getAccounts from './utils/getAccounts'
@@ -47,6 +47,7 @@ class App extends Component {
 
     getRoles() {
         marketplaceService.getRoles().then((roles) => {
+            console.log("Get roles", roles)
             return this.setState({
                 roles: roles
             });
@@ -97,29 +98,29 @@ class App extends Component {
         // )
 
         return (
-            <div className="App">
-                <nav className="navbar pure-menu pure-menu-horizontal">
-                    <a href="/" className="pure-menu-heading pure-menu-link">Home</a>
-                    {this.state.roles.owner &&
-                        <a href="/admins" className="pure-menu-heading pure-menu-link">Admin management</a>
-                    }
-                    {(this.state.roles.owner || this.state.roles.admin) &&
-                        <a href="sellers" className="pure-menu-heading pure-menu-link">Seller management</a>
-                    }
-                    {this.state.roles.seller &&
-                        <a href="/shops" className="pure-menu-heading pure-menu-link">Shops management</a>
-                    }
-                </nav>
-                <main className="container">
-                    <div className="pure-g">
-                        <div className="pure-u-1-5"></div>
-                        <div className="pure-u-3-5">
-                            {!this.state.ready ?
-                                (
-                                    <h2></h2>
-                                )
-                            : (
-                                <Router>
+            <Router>
+                <div className="App">
+                    <nav className="navbar pure-menu pure-menu-horizontal">
+                        <Link to="/" className="pure-menu-heading pure-menu-link">Home</Link>
+                        {this.state.roles.owner &&
+                            <Link to="/admins" className="pure-menu-heading pure-menu-link">Admin management</Link>
+                        }
+                        {(this.state.roles.owner || this.state.roles.admin) &&
+                            <Link to="/sellers" className="pure-menu-heading pure-menu-link">Seller management</Link>
+                        }
+                        {this.state.roles.seller &&
+                            <Link to="/shops" className="pure-menu-heading pure-menu-link">Shops management</Link>
+                        }
+                    </nav>
+                    <main className="container">
+                        <div className="pure-g">
+                            <div className="pure-u-1-5"></div>
+                            <div className="pure-u-3-5">
+                                {!this.state.ready ?
+                                    (
+                                        <h2></h2>
+                                    )
+                                : (
                                     <Switch>
                                         <Route exact path='/' render={(props) => (
                                             <Shops roles={this.state.roles}/>
@@ -144,13 +145,13 @@ class App extends Component {
                                             <ShopRouter {...props} />
                                         )}/>
                                     </Switch>
-                                </Router>
-                            )}
+                                )}
+                            </div>
+                            <div className="pure-u-1-5"></div>
                         </div>
-                        <div className="pure-u-1-5"></div>
-                    </div>
-                </main>
-            </div>
+                    </main>
+                </div>
+            </Router>
         );
     }
 }

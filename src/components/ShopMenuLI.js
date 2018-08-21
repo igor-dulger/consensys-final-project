@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-
+import { Link } from "react-router-dom";
 class ShopMenuLI extends Component {
     render() {
         if (!this.props.show) {
@@ -13,7 +13,7 @@ class ShopMenuLI extends Component {
 
         return (
                 <li className={className}>
-                    <a href={this.props.url} className="pure-menu-link">{this.props.label}</a>
+                    <Link to={this.props.url} className="pure-menu-link">{this.props.label}</Link>
                 </li>
         );
     }

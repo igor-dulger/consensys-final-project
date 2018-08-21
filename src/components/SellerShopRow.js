@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from "react-router-dom";
 
 class SellerShopRow extends Component {
     constructor(props) {
@@ -13,7 +14,7 @@ class SellerShopRow extends Component {
         return (
             <tr className="pure-table-odd">
                 <td>{this.props.id}</td>
-                <td><a href={link} className="">{this.props.name}</a></td>
+                <td><Link to={link} className="">{this.props.name}</Link></td>
                 <td>{this.props.description}</td>
                 <td><button className="button-error pure-button" onClick={this.props.onDeleteClick}>Delete</button></td>
             </tr>

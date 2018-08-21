@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import ProductBuy from './ProductBuy'
+import { Link } from 'react-router-dom';
 
 class ProductRowManage extends Component {
     constructor(props) {
@@ -14,9 +15,9 @@ class ProductRowManage extends Component {
         return (
             <tr className={this.props.index % 2 === 1 ? "pure-table-odd" : ""} >
                 <td>{this.props.id}</td>
-                <td><a href={this.props.link}>{this.props.name}</a></td>
+                <td><Link to={this.props.link}>{this.props.name}</Link></td>
                 <td>{this.props.price}</td>
-                <td><button className="button-secondary pure-button" onClick={this.props.onEditClick}>Edit</button></td>
+                <td><Link to={this.props.editLink}><button className="button-secondary pure-button">Edit</button></Link></td>
                 <td><button className="button-warning pure-button" onClick={this.props.onDeleteClick}>Delete</button></td>
                 <td>{this.props.quantity}</td>
                 <td valign="center"><ProductBuy id={this.props.id} price={this.props.price}/></td>

@@ -29,7 +29,7 @@ class ShopProducts extends Component {
         this.handleShowMoreClick = this.handleShowMoreClick.bind(this);
         this.handleCreateClick = this.handleCreateClick.bind(this);
         this.getDeleteClickHandler = this.getDeleteClickHandler.bind(this);
-        this.getEditClickHandler = this.getEditClickHandler.bind(this);
+        // this.getEditClickHandler = this.getEditClickHandler.bind(this);
     }
 
     componentWillMount() {
@@ -79,11 +79,11 @@ class ShopProducts extends Component {
         }
     }
 
-    getEditClickHandler(id) {
-        return (event) => {
-            window.location.replace(this.props.match.url + "/edit/" + id)
-        }
-    }
+    // getEditClickHandler(id) {
+    //     return (event) => {
+    //         window.location.replace(this.props.match.url + "/edit/" + id)
+    //     }
+    // }
 
     readOptions() {
         shopService.name().then(result => {
@@ -138,7 +138,7 @@ class ShopProducts extends Component {
                 wantToBuy: 1,
                 link: this.props.match.url + "/product/" + rowId,
                 onDeleteClick: this.getDeleteClickHandler(rowId),
-                onEditClick: this.getEditClickHandler(rowId)
+                editLink: this.props.match.url + "/edit/" + rowId
             }
             this.getNext(row.id, showed+1)
             let shops = this.state.list

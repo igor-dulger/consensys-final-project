@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import marketplaceService from '../services/Marketplace'
+import { Link } from 'react-router-dom';
 import SellerShopRow from './SellerShopRow'
 import { withAlert } from 'react-alert'
 
@@ -16,7 +17,7 @@ class SellerShops extends Component {
         }
 
         this.getDeleteClickHandler = this.getDeleteClickHandler.bind(this);
-        this.handleCreateClick = this.handleCreateClick.bind(this);
+        // this.handleCreateClick = this.handleCreateClick.bind(this);
     }
 
     componentWillMount() {
@@ -77,9 +78,9 @@ class SellerShops extends Component {
         })
     }
 
-    handleCreateClick(event) {
-        window.location.replace("/shops/add")
-    }
+    // handleCreateClick(event) {
+    //     window.location.replace("/shops/add")
+    // }
 
     getDeleteClickHandler(id) {
         return (event) => {
@@ -101,7 +102,7 @@ class SellerShops extends Component {
         return (
             <div>
                 <h1>{this.props.account} shops</h1>
-                <button className="button-success pure-button" onClick={this.handleCreateClick}>Create Shop</button>
+                <Link to="/shops/add"><button className="button-success pure-button">Create Shop</button></Link>
                 <div>&nbsp;</div>
                 <table className="pure-table">
                     <thead>

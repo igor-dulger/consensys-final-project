@@ -3,6 +3,7 @@ import shopService from '../services/Shop'
 import { withAlert } from 'react-alert'
 import dataProvider from '../services/DataProvider'
 import ProductBuy from './ProductBuy'
+import Helpers from '../utils/Helpers'
 
 class ShowProduct extends Component {
     constructor(props) {
@@ -15,6 +16,7 @@ class ShowProduct extends Component {
             quantity: '',
             image: '',
         }
+        this.events = {}
     }
 
     componentWillMount() {
@@ -22,22 +24,32 @@ class ShowProduct extends Component {
         this.addWatchers()
     }
 
+    componentWillUnmount() {
+        Helpers.stopWatchers(this.events)
+    }
+
     addWatchers() {
-        shopService.getWatcherProductDeleted().watch( (err, result) => {
+
+        this.events.productDeleted = shopService.getWatcherProductDeleted()
+        this.events.productDeleted.watch( (err, result) => {
             if (result.args.id.toString() === this.props.match.params.id) {
                 window.location.replace(this.props.history.goBack())
             }
         })
-        shopService.getWatcherProductEdited().watch( (err, result) => {
+        this.events.productEdited = shopService.getWatcherProductEdited()
+        this.events.productEdited.watch( (err, result) => {
             this.getProduct(this.props.match.params.id)
         })
-        shopService.getWatcherProductQuantityDecreased().watch( (err, result) => {
+        this.events.productQuantityDecreased = shopService.getWatcherProductQuantityDecreased()
+        this.events.productQuantityDecreased.watch( (err, result) => {
             this.getProduct(this.props.match.params.id)
         })
-        shopService.getWatcherProductSold().watch( (err, result) => {
+        this.events.productSold = shopService.getWatcherProductSold()
+        this.events.productSold.watch( (err, result) => {
             this.props.alert.success('Product was sold')
             this.getProduct(this.props.match.params.id)
         })
+
     }
 
     getProduct(id) {

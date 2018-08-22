@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import marketplaceService from '../services/Marketplace'
 import { withAlert } from 'react-alert'
 import dataProvider from '../services/DataProvider'
+import Helpers from '../utils/Helpers'
 
 class createShop extends Component {
     constructor(props) {
@@ -11,6 +12,8 @@ class createShop extends Component {
             name: '',
             description: '',
         }
+
+        this.events = {}
 
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
@@ -22,8 +25,13 @@ class createShop extends Component {
         this.addWatchers()
     }
 
+    componentWillUnmount() {
+        Helpers.stopWatchers(this.events)
+    }
+
     addWatchers() {
-        marketplaceService.getWatcherShopAdded().watch ( (err, result) => {
+        this.events.shopAdded = marketplaceService.getWatcherShopAdded()
+        this.events.shopAdded.watch( (err, result) => {
             console.log("Watcher add shop", result)
             if (
                 result.args.name === this.state.name &&

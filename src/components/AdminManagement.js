@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import marketplaceService from '../services/Marketplace'
 import { withAlert } from 'react-alert'
+import Helpers from '../utils/Helpers'
 
 class AdminManagement extends Component {
     constructor(props) {
@@ -11,6 +12,9 @@ class AdminManagement extends Component {
             remove: '',
             check: '',
         }
+
+        this.events = {}
+
         this.handleCheckChange = this.handleCheckChange.bind(this);
         this.handleCheckSubmit = this.handleCheckSubmit.bind(this);
 
@@ -25,8 +29,13 @@ class AdminManagement extends Component {
         this.addWatchers()
     }
 
+    componentWillUnmount() {
+        Helpers.stopWatchers(this.events)
+    }
+
     addWatchers() {
-        marketplaceService.getWatcherAddRole('admin').watch ( (err, result) => {
+        this.events.AddRole = marketplaceService.getWatcherAddRole('admin')
+        this.events.AddRole.watch( (err, result) => {
             console.log("Watcher add admin", result)
             if (result.args.operator === this.state.add) {
                 this.setState({
@@ -35,7 +44,9 @@ class AdminManagement extends Component {
                 this.props.alert.success("Admin was added")
             }
         })
-        marketplaceService.getWatcherRemoveRole('admin').watch ( (err, result) => {
+
+        this.events.RemoveRole = marketplaceService.getWatcherRemoveRole('admin')
+        this.events.RemoveRole.watch( (err, result) => {
             console.log("Watcher remove admin", result)
             if (result.args.operator === this.state.remove) {
                 this.setState({

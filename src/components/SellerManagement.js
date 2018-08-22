@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import marketplaceService from '../services/Marketplace'
 import { withAlert } from 'react-alert'
+import Helpers from '../utils/Helpers'
 
 class SellerManagement extends Component {
     constructor(props) {
@@ -11,6 +12,9 @@ class SellerManagement extends Component {
             remove: '',
             check: '',
         }
+
+        this.events = {}
+        
         this.handleCheckChange = this.handleCheckChange.bind(this);
         this.handleCheckSubmit = this.handleCheckSubmit.bind(this);
 
@@ -25,8 +29,13 @@ class SellerManagement extends Component {
         this.addWatchers()
     }
 
+    componentWillUnmount() {
+        Helpers.stopWatchers(this.events)
+    }
+
     addWatchers() {
-        marketplaceService.getWatcherAddRole('seller').watch ( (err, result) => {
+        this.events.AddRole = marketplaceService.getWatcherAddRole('seller')
+        this.events.AddRole.watch( (err, result) => {
             console.log("Watcher add seller", result)
             if (result.args.operator === this.state.add) {
                 this.setState({
@@ -35,7 +44,9 @@ class SellerManagement extends Component {
                 this.props.alert.success("Seller was added")
             }
         })
-        marketplaceService.getWatcherRemoveRole('seller').watch ( (err, result) => {
+
+        this.events.RemoveRole = marketplaceService.getWatcherRemoveRole('seller')
+        this.events.RemoveRole.watch( (err, result) => {
             console.log("Watcher remove seller", result)
             if (result.args.operator === this.state.remove) {
                 this.setState({

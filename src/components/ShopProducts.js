@@ -6,6 +6,7 @@ import ProductTableHeader from './ProductTableHeader'
 import ProductRow from './ProductRow'
 import ProductTableHeaderManage from './ProductTableHeaderManage'
 import ProductRowManage from './ProductRowManage'
+import Helpers from '../utils/Helpers'
 
 class ShopProducts extends Component {
     constructor(props) {
@@ -25,6 +26,7 @@ class ShopProducts extends Component {
             pageSize: 20,
             readInProgress: false
         }
+        this.events = {}
 
         this.handleShowMoreClick = this.handleShowMoreClick.bind(this);
         this.handleCreateClick = this.handleCreateClick.bind(this);
@@ -38,20 +40,31 @@ class ShopProducts extends Component {
         this.addWatchers()
     }
 
+    componentWillUnmount() {
+        Helpers.stopWatchers(this.events)
+    }
+
     addWatchers() {
-        shopService.getWatcherProductDeleted().watch( (err, result) => {
+        console.log("Add shop watchers")
+
+        this.events.productDeleted = shopService.getWatcherProductDeleted()
+        this.events.productDeleted.watch( (err, result) => {
             this.readProducts()
         })
-        shopService.getWatcherProductAdded().watch( (err, result) => {
+        this.events.productAdded = shopService.getWatcherProductAdded()
+        this.events.productAdded.watch( (err, result) => {
             this.readProducts()
         })
-        shopService.getWatcherProductEdited().watch( (err, result) => {
+        this.events.productEdited = shopService.getWatcherProductEdited()
+        this.events.productEdited.watch( (err, result) => {
             this.readProducts()
         })
-        shopService.getWatcherProductQuantityDecreased().watch( (err, result) => {
+        this.events.productQuantityDecreased = shopService.getWatcherProductQuantityDecreased()
+        this.events.productQuantityDecreased.watch( (err, result) => {
             this.readProducts()
         })
-        shopService.getWatcherProductSold().watch( (err, result) => {
+        this.events.productSold = shopService.getWatcherProductSold()
+        this.events.productSold.watch( (err, result) => {
             this.props.alert.success('Product was sold')
         })
     }
@@ -78,12 +91,6 @@ class ShopProducts extends Component {
             })
         }
     }
-
-    // getEditClickHandler(id) {
-    //     return (event) => {
-    //         window.location.replace(this.props.match.url + "/edit/" + id)
-    //     }
-    // }
 
     readOptions() {
         shopService.name().then(result => {

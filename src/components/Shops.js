@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import marketplaceService from '../services/Marketplace'
 import { withAlert } from 'react-alert'
 import ShopRow from './ShopRow'
+import Helpers from '../utils/Helpers'
 
 class Shops extends Component {
     constructor(props) {
@@ -15,6 +16,8 @@ class Shops extends Component {
             readInProgress: false
         }
 
+        this.events = {}
+
         this.handleShowMoreClick = this.handleShowMoreClick.bind(this);
     }
 
@@ -23,11 +26,18 @@ class Shops extends Component {
         this.addWatchers()
     }
 
+    componentWillUnmount() {
+        Helpers.stopWatchers(this.events)
+    }
+
     addWatchers() {
-        marketplaceService.getWatcherShopDeleted().watch( (err, result) => {
+
+        this.events.shopDeleted = marketplaceService.getWatcherShopDeleted()
+        this.events.shopDeleted.watch( (err, result) => {
             this.readState()
         })
-        marketplaceService.getWatcherShopAdded().watch( (err, result) => {
+        this.events.shopAdded = marketplaceService.getWatcherShopAdded()
+        this.events.shopAdded.watch( (err, result) => {
             this.readState()
         })
     }

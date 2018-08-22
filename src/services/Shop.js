@@ -97,7 +97,8 @@ class Shop {
     }
 
     getWatcherProductSold() {
-        return dataProvider.shop.ProductSold()
+        var event = dataProvider.shop.ProductSold()
+        return event
     }
 
     getWatcherProductQuantityDecreased() {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import marketplaceService from '../services/Marketplace'
+import Helpers from '../utils/Helpers'
 import { Link } from 'react-router-dom';
 import SellerShopRow from './SellerShopRow'
 import { withAlert } from 'react-alert'
@@ -16,6 +17,8 @@ class SellerShops extends Component {
             lastDeleted: 0
         }
 
+        this.events = {}
+
         this.getDeleteClickHandler = this.getDeleteClickHandler.bind(this);
         // this.handleCreateClick = this.handleCreateClick.bind(this);
     }
@@ -25,8 +28,13 @@ class SellerShops extends Component {
         this.addWatchers()
     }
 
+    componentWillUnmount() {
+        Helpers.stopWatchers(this.events)
+    }
+
     addWatchers() {
-        marketplaceService.getWatcherShopDeleted().watch ((err, result) => {
+        this.events.shopDeleted = marketplaceService.getWatcherShopDeleted()
+        this.events.shopDeleted.watch( (err, result) => {
             console.log("Watcher delete shop", result)
             if (this.state.lastDeleted === result.args.id.toString()) {
                 this.props.alert.success("Shop was deleted")

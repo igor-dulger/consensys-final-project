@@ -3,6 +3,7 @@ import shopService from '../services/Shop'
 import dataProvider from '../services/DataProvider'
 import { withAlert } from 'react-alert'
 import Loader from 'react-loader-spinner'
+import Helpers from '../utils/Helpers'
 
 class ManageProduct extends Component {
     constructor(props) {
@@ -20,6 +21,8 @@ class ManageProduct extends Component {
             enableWatcher: false
         }
 
+        this.events = {}
+
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handlePriceChange = this.handlePriceChange.bind(this);
         this.handleQuantityChange = this.handleQuantityChange.bind(this);
@@ -34,9 +37,13 @@ class ManageProduct extends Component {
         }
         this.addWatchers(this.props.match.params.id)
     }
+    componentWillUnmount() {
+        Helpers.stopWatchers(this.events)
+    }
 
     addWatchers() {
-        shopService.getWatcherProductAdded().watch( (err, result) => {
+        this.events.productAdded = shopService.getWatcherProductAdded()
+        this.events.productAdded.watch( (err, result) => {
             if (this.state.enableWatcher) {
                 this.setState({
                     name: '',
@@ -48,7 +55,8 @@ class ManageProduct extends Component {
                 this.props.alert.success("Product was created")
             }
         })
-        shopService.getWatcherProductEdited().watch( (err, result) => {
+        this.events.productEdited = shopService.getWatcherProductEdited()
+        this.events.productEdited.watch( (err, result) => {
             if (this.state.enableWatcher) {
                 this.setState({
                     enableWatcher: false

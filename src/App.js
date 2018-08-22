@@ -113,6 +113,7 @@ class App extends Component {
                         }
                     </nav>
                     <main className="container">
+                        <h3>Account: {this.state.account}</h3>
                         <div className="pure-g">
                             <div className="pure-u-1-5"></div>
                             <div className="pure-u-3-5">

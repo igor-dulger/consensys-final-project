@@ -16,3 +16,4 @@ HD Wallet
 Mnemonic:      make toilet coffee child enough artwork write sauce polar sport problem junior
 
 Project address: 0xfa193ba1ec883e97ffe97f0c875eab43b9b048e7
+https://rinkeby.etherscan.io/address/0xfa193ba1ec883e97ffe97f0c875eab43b9b048e7

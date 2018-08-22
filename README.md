@@ -138,16 +138,18 @@ $ truffle test
 ```
 $ truffle migrate --reset
 ```
+### Metamask configuration
+Open metamask plugin in your browser. Logout from your current account. Click
+*Import using account seed phrase*
+Use mnemonics you saved before
+Select custom network 127.0.0.1:8545
 
 ### Start web server localhost:3000
 ```
 $ npm run start
 ```
 
-### Metamask configuration
-Open metamask plugin in your browser. Logout from your current account. Click
-*Import using account seed phrase*
-Use mnemonics you saved before
+
 
 ### Testing tips
 For testing just give your Account1 (marketplace owner) a seller role. Then

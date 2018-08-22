@@ -227,16 +227,16 @@ contract('Shop', function(accounts) {
         assert.equal(list[0].toString(), 5, 'get next after 4');
 
         list = await shop.getNext(5);
-        assert.equal(list[0].toString(), 6, 'get next after 4');
+        assert.equal(list[0].toString(), 6, 'get next after 5');
 
         list = await shop.getNext(6);
-        assert.equal(list[0].toString(), 7, 'get next after 4');
+        assert.equal(list[0].toString(), 7, 'get next after 6');
 
         list = await shop.getNext(7);
-        assert.equal(list[0].toString(), 8, 'get next after 4');
+        assert.equal(list[0].toString(), 8, 'get next after 7');
 
         list = await shop.getNext(8);
-        assert.equal(list[0].toString(), 10, 'get next after 4');
+        assert.equal(list[0].toString(), 10, 'get next after 8');
 
         list = await shop.getNext(10);
         assert.equal(11, list[0].toString(), 'get next after 10');

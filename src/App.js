@@ -12,6 +12,7 @@ import SellerManagement from './components/SellerManagement'
 import SellerShops from './components/SellerShops'
 import CreateShop from './components/CreateShop'
 import ShopRouter from './components/ShopRouter'
+import Helpers from './utils/Helpers'
 
 import { withAlert } from 'react-alert'
 
@@ -33,6 +34,9 @@ class App extends Component {
             },
             account: null
         }
+
+        this.events = {}
+
         this.watchAccountChangeDescriptor = null
     }
 
@@ -66,6 +70,30 @@ class App extends Component {
         })
     }
 
+    componentWillUnmount() {
+        Helpers.stopWatchers(this.events)
+    }
+
+    addWatchers() {
+        this.events.AddAdminRole = marketplaceService.getWatcherAddRole('admin')
+        this.events.AddAdminRole.watch( (err, result) => {
+            this.getRoles()
+        })
+        this.events.AddSellerRole = marketplaceService.getWatcherAddRole('seller')
+        this.events.AddSellerRole.watch( (err, result) => {
+            this.getRoles()
+        })
+
+        this.events.RemoveAdminRole = marketplaceService.getWatcherRemoveRole('admin')
+        this.events.RemoveAdminRole.watch( (err, result) => {
+            this.getRoles()
+        })
+        this.events.RemoveSellerRole = marketplaceService.getWatcherRemoveRole('seller')
+        this.events.RemoveSellerRole.watch( (err, result) => {
+            this.getRoles()
+        })
+    }
+
     instantiateContract() {
         console.log("Get marketplace contract")
         getAccounts().then((accounts) => {
@@ -81,6 +109,7 @@ class App extends Component {
                     ready: true,
                     account: dataProvider.account
                 })
+                this.addWatchers()
             })
         })
     }
